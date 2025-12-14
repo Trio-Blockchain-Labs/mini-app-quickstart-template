@@ -79,6 +79,17 @@
   cursor: not-allowed;
 }
 
+.guestButton {
+  margin-top: 8px;
+  background: transparent;
+  color: #4F46E5;
+  border: 1px solid #E6E9F2;
+  padding: 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .error {
   color: #B91C1C;
   font-size: 13px;

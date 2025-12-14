@@ -78,11 +78,25 @@ export default function LoginPage() {
           <button className={styles.button} disabled={loading}>
             {loading ? "Giriş Yapılıyor..." : "Giriş Yap"}
           </button>
+
+          <button
+            type="button"
+            className={styles.guestButton}
+            onClick={() => {
+              // Allow users to continue without creating an account
+              try {
+                localStorage.setItem("guest", "1");
+              } catch (e) {
+                // ignore
+              }
+              router.push("/success");
+            }}
+          >
+            Misafir olarak devam et
+          </button>
         </form>
 
-        <div className={styles.footer}>
-          <p>Hesabınız yok mu? <a href="#">Kayıt olun</a></p>
-        </div>
+        {/* Registration link removed as requested */}
       </div>
     </main>
   );
