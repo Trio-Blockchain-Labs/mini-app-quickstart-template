@@ -1,68 +1,184 @@
 "use client";
-import { useEffect } from "react";
-import Image from "next/image";
+import { useState, useEffect } from "react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
-import { useRouter } from "next/navigation";
-import {
-  Wallet,
-  ConnectWallet,
-  WalletDropdown,
-  WalletDropdownDisconnect,
-  WalletDropdownLink,
-  WalletDropdownBasename,
-  WalletDropdownFundLink
-} from '@coinbase/onchainkit/wallet';
-import {
-  Identity,
-  Avatar,
-  Name,
-  Address,
-  EthBalance
-} from '@coinbase/onchainkit/identity';
+import { ConnectWallet, Wallet, WalletDropdown, WalletDropdownDisconnect, WalletDropdownLink, WalletDropdownBasename, WalletDropdownFundLink } from '@coinbase/onchainkit/wallet';
+import { Address, Avatar, Name, Identity, EthBalance } from '@coinbase/onchainkit/identity';
+import { UserGroupIcon, CurrencyDollarIcon, ShareIcon, CheckCircleIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 
 export default function Home() {
-  const { isFrameReady, setFrameReady } = useMiniKit();
-  const router = useRouter();
+  const { isFrameReady } = useMiniKit();
+  const [totalAmount, setTotalAmount] = useState<string>("");
+  const [peopleCount, setPeopleCount] = useState<string>("2");
+  const [splitAmount, setSplitAmount] = useState<number>(0);
+  const [isLinkCreated, setIsLinkCreated] = useState(false);
 
   useEffect(() => {
-    if (!isFrameReady) {
-      setFrameReady();
+    if (totalAmount && peopleCount) {
+      const total = parseFloat(totalAmount);
+      const people = parseInt(peopleCount);
+      if (!isNaN(total) && !isNaN(people) && people > 0) {
+        setSplitAmount(total / people);
+      } else {
+        setSplitAmount(0);
+      }
     }
-  }, [setFrameReady, isFrameReady]);
+  }, [totalAmount, peopleCount]);
+
+  const handleCreateRequest = () => {
+    if (splitAmount > 0) {
+      setIsLinkCreated(true);
+      // In a real app, this would generate a unique link with parameters
+      // e.g., ?amount=25&recipient=0x...
+    }
+  };
+
+  const handlePay = async () => {
+    // This is where we would trigger the transaction
+    alert(`Initiating payment of ${splitAmount.toFixed(4)} ETH`);
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 space-y-8">
-      <div className="flex items-center gap-6">
-        <div className="relative w-32 h-32 sm:w-48 sm:h-48">
-          <Image
-            src="/base-logo.png"
-            alt="Base Logo"
-            fill
-            className="object-contain rounded-xl"
-          />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black text-white p-6 font-sans">
+      {/* Header */}
+      <header className="flex justify-between items-center mb-8">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+            <CurrencyDollarIcon className="w-6 h-6 text-white" />
+          </div>
+          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-white">
+            Base Split
+          </h1>
         </div>
-        <div className="relative w-32 h-32 sm:w-48 sm:h-48">
-          <Image
-            src="/trio-logo.png"
-            alt="Trio Logo"
-            fill
-            className="object-contain rounded-xl"
-          />
+        <div className="flex items-center">
+          <Wallet>
+            <ConnectWallet className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-2 text-sm font-medium transition-all">
+              <Avatar className="h-6 w-6" />
+              <Name />
+            </ConnectWallet>
+            <WalletDropdown>
+              <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
+                <Avatar />
+                <Name />
+                <Address />
+                <EthBalance />
+              </Identity>
+              <WalletDropdownBasename />
+              <WalletDropdownLink icon="wallet" href="https://keys.coinbase.com">
+                Wallet
+              </WalletDropdownLink>
+              <WalletDropdownFundLink />
+              <WalletDropdownDisconnect />
+            </WalletDropdown>
+          </Wallet>
         </div>
-      </div>
-      <h1 className="text-4xl font-bold text-center">Base Mini App Template</h1>
-      <p className="text-center text-gray-600">
-        Welcome to your new Base MiniApp!
-      </p>
+      </header>
 
-      <div className="fixed bottom-8 w-full px-4">
-        <button
-          onClick={() => router.push('/examples')}
-          className="w-full bg-[#0000ff] text-button-text font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-colors"
-        >
-          Get Started
-        </button>
-      </div>
+      {/* Main Content */}
+      <main className="max-w-md mx-auto space-y-6">
+
+        {/* Input Card */}
+        <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-6 shadow-2xl">
+          <div className="space-y-6">
+
+            {/* Total Amount Input */}
+            <div className="space-y-2">
+              <label className="text-gray-400 text-sm font-medium ml-1">Total Bill Amount (ETH)</label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <span className="text-gray-500 text-lg">Ξ</span>
+                </div>
+                <input
+                  type="number"
+                  value={totalAmount}
+                  onChange={(e) => setTotalAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full bg-gray-900/50 border border-gray-700 text-white text-2xl font-bold rounded-2xl py-4 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-gray-600"
+                />
+              </div>
+            </div>
+
+            {/* People Count Input */}
+            <div className="space-y-2">
+              <label className="text-gray-400 text-sm font-medium ml-1">Split With (People)</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <UserGroupIcon className="w-5 h-5 text-gray-500" />
+                </div>
+                <input
+                  type="number"
+                  value={peopleCount}
+                  onChange={(e) => setPeopleCount(e.target.value)}
+                  min="1"
+                  className="w-full bg-gray-900/50 border border-gray-700 text-white text-lg font-semibold rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Result Display */}
+            <div className="bg-blue-600/10 border border-blue-500/20 rounded-2xl p-4 flex justify-between items-center">
+              <span className="text-blue-200 font-medium">Per Person</span>
+              <span className="text-2xl font-bold text-blue-400">
+                {splitAmount > 0 ? splitAmount.toFixed(4) : "0.00"} <span className="text-sm text-blue-500/70">ETH</span>
+              </span>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        {!isLinkCreated ? (
+          <button
+            onClick={handleCreateRequest}
+            disabled={!totalAmount || parseFloat(totalAmount) <= 0}
+            className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-600/20 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2"
+          >
+            <ShareIcon className="w-5 h-5" />
+            Create Split Request
+          </button>
+        ) : (
+          <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="bg-green-500/10 border border-green-500/20 rounded-2xl p-4 flex items-center gap-3">
+              <CheckCircleIcon className="w-6 h-6 text-green-400" />
+              <div>
+                <h3 className="font-bold text-green-400">Request Created!</h3>
+                <p className="text-sm text-green-400/70">Share the link with your friends.</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <button
+                onClick={() => {
+                  // Mock sharing
+                  alert("Link copied to clipboard!");
+                }}
+                className="bg-gray-800 hover:bg-gray-700 text-white font-semibold py-3 rounded-xl border border-gray-700 transition-all"
+              >
+                Copy Link
+              </button>
+              <button
+                onClick={() => setIsLinkCreated(false)}
+                className="bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white font-semibold py-3 rounded-xl border border-gray-700 transition-all flex items-center justify-center gap-2"
+              >
+                <ArrowPathIcon className="w-4 h-4" />
+                Reset
+              </button>
+            </div>
+
+            {/* Simulation of what a friend would see */}
+            <div className="mt-8 pt-8 border-t border-gray-800">
+              <p className="text-center text-gray-500 text-sm mb-4">Preview (Friend's View)</p>
+              <button
+                onClick={handlePay}
+                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-green-600/20 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2"
+              >
+                <CurrencyDollarIcon className="w-6 h-6" />
+                Pay {splitAmount.toFixed(4)} ETH
+              </button>
+            </div>
+          </div>
+        )}
+
+      </main>
     </div>
   );
 }

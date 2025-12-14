@@ -8,16 +8,17 @@
 
 @layer base {
   :root {
-    --background: #eef0f3;
-    --foreground: #32353d;
-    --button-text: #eef0f3;
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --button-text: #ffffff;
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --background: #eef0f3;
-      --foreground: #32353d;
-    }
+  @media (prefers-color-scheme: light) {
+    /* Optional: Keep light mode if needed, but default is dark */
+    /* :root {
+      --background: #ffffff;
+      --foreground: #171717;
+    } */
   }
 
   html,
