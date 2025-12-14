@@ -18,7 +18,7 @@ export const minikitConfig = {
   },
   miniapp: {
     version: "1",
-    name: "Base Quick Split",
+    name: "QuickSplit",
     subtitle: "Split bills instantly on Base",
     description: "The fastest way to split bills and settle debts with friends using Base. Instant, cheap, and seamless.",
     screenshotUrls: [],
