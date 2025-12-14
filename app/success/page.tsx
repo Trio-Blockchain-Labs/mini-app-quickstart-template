@@ -3,10 +3,21 @@
 import { useComposeCast } from '@coinbase/onchainkit/minikit';
 import { minikitConfig } from "../../minikit.config";
 import styles from "./page.module.css";
+import { useEffect, useState } from "react";
 
 export default function Success() {
 
   const { composeCastAsync } = useComposeCast();
+  const [isGuest, setIsGuest] = useState(false);
+
+  useEffect(() => {
+    try {
+      const g = localStorage.getItem("guest");
+      setIsGuest(!!g);
+    } catch (e) {
+      setIsGuest(false);
+    }
+  }, []);
   
   const handleShare = async () => {
     try {
@@ -44,10 +55,18 @@ export default function Success() {
           </div>
           
           <h1 className={styles.title}>Welcome to the {minikitConfig.miniapp.name.toUpperCase()}!</h1>
-          
+
           <p className={styles.subtitle}>
-            You&apos;re in! We&apos;ll notify you as soon as we launch.<br />
-            Get ready to experience the future of onchain marketing.
+            {isGuest ? (
+              <>
+                Misafir olarak devam ediyorsunuz. Kaydolmak isterseniz daha sonra yapabilirsiniz.
+              </>
+            ) : (
+              <>
+                You&apos;re in! We&apos;ll notify you as soon as we launch.<br />
+                Get ready to experience the future of onchain marketing.
+              </>
+            )}
           </p>
 
           <button onClick={handleShare} className={styles.shareButton}>
