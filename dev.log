@@ -1,0 +1,177 @@
+nohup: ignoring input
+
+> new-mini-app-quickstart@0.1.0 dev
+> next dev
+
+   ▲ Next.js 16.0.7 (Turbopack)
+   - Local:         http://localhost:3000
+   - Network:       http://10.1.231.24:3000
+
+ ✓ Starting...
+ ✓ Ready in 473ms
+ ○ Compiling / ...
+ GET / 200 in 5.1s (compile: 4.9s, render: 275ms)
+ GET /moods/fire.png 404 in 3.0s (compile: 2.9s, render: 96ms)
+ GET /moods/sleep.png 404 in 3.0s (compile: 2.9s, render: 102ms)
+ GET /moods/love.png 404 in 3.0s (compile: 2.9s, render: 94ms)
+ GET /moods/happy.png 404 in 3.0s (compile: 3.0s, render: 87ms)
+ GET /moods/sweat.png 404 in 3.0s (compile: 3.0s, render: 79ms)
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ GET /intro-poster.jpg 404 in 3.2s (compile: 3.1s, render: 159ms)
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ HEAD / 200 in 139ms (compile: 112ms, render: 27ms)
+ ✓ Compiled in 116ms
+ ✓ Compiled in 0ms
+ GET /intro-poster.jpg 404 in 178ms (compile: 152ms, render: 26ms)
+ GET / 200 in 409ms (compile: 197ms, render: 212ms)
+ GET /intro-poster.jpg 404 in 148ms (compile: 110ms, render: 38ms)
+ GET /moods/happy.png 404 in 297ms (compile: 163ms, render: 134ms)
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ GET /moods/sweat.png 404 in 310ms (compile: 262ms, render: 48ms)
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ GET /moods/sleep.png 404 in 231ms (compile: 202ms, render: 29ms)
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ GET /moods/love.png 404 in 106ms (compile: 82ms, render: 24ms)
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ GET /moods/fire.png 404 in 108ms (compile: 88ms, render: 20ms)
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ HEAD / 200 in 105ms (compile: 86ms, render: 19ms)
+ GET / 200 in 111ms (compile: 88ms, render: 23ms)
+ GET /intro-poster.jpg 404 in 104ms (compile: 81ms, render: 23ms)
+ GET /moods/happy.png 404 in 189ms (compile: 82ms, render: 107ms)
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ GET /moods/sweat.png 404 in 200ms (compile: 100ms, render: 100ms)
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ GET /moods/sleep.png 404 in 106ms (compile: 84ms, render: 21ms)
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ GET /moods/love.png 404 in 103ms (compile: 83ms, render: 21ms)
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ GET /moods/fire.png 404 in 99ms (compile: 80ms, render: 19ms)
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ HEAD / 200 in 124ms (compile: 84ms, render: 40ms)
+ ✓ Compiled in 76ms
+ GET / 200 in 403ms (compile: 211ms, render: 192ms)
+ GET / 200 in 153ms (compile: 138ms, render: 15ms)
+ ✓ Compiled in 22ms
+ GET /intro-poster.jpg 404 in 136ms (compile: 112ms, render: 25ms)
+ GET /intro-poster.jpg 404 in 99ms (compile: 80ms, render: 19ms)
+ ✓ Compiled in 22ms
+ HEAD / 200 in 391ms (compile: 186ms, render: 205ms)
+ GET / 200 in 124ms (compile: 96ms, render: 28ms)
+ GET /intro-poster.jpg 404 in 118ms (compile: 95ms, render: 22ms)
+ HEAD / 200 in 111ms (compile: 93ms, render: 18ms)
+ ✓ Compiled in 5ms
+ GET /intro-poster.jpg 404 in 232ms (compile: 201ms, render: 31ms)
+ GET / 200 in 537ms (compile: 245ms, render: 292ms)
+ GET /intro-poster.jpg 404 in 201ms (compile: 83ms, render: 119ms)
+ GET /moods/happy.png 404 in 100ms (compile: 80ms, render: 20ms)
+ GET / 200 in 440ms (compile: 101ms, render: 339ms)
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ GET /moods/sweat.png 404 in 199ms (compile: 161ms, render: 37ms)
+ GET /moods/sleep.png 404 in 201ms (compile: 181ms, render: 20ms)
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ GET /moods/love.png 404 in 98ms (compile: 81ms, render: 18ms)
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ GET /moods/fire.png 404 in 106ms (compile: 89ms, render: 18ms)
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ ✓ Compiled in 18ms
+ HEAD / 200 in 391ms (compile: 172ms, render: 219ms)
+ GET / 200 in 124ms (compile: 99ms, render: 25ms)
+ GET /intro-poster.jpg 404 in 115ms (compile: 92ms, render: 22ms)
+ GET /moods/happy.png 404 in 310ms (compile: 250ms, render: 60ms)
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ GET /moods/sweat.png 404 in 318ms (compile: 270ms, render: 48ms)
+ GET /moods/sleep.png 404 in 321ms (compile: 280ms, render: 40ms)
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ GET /moods/love.png 404 in 219ms (compile: 181ms, render: 37ms)
+ GET /moods/fire.png 404 in 218ms (compile: 196ms, render: 22ms)
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ HEAD / 200 in 104ms (compile: 86ms, render: 18ms)
+ GET / 200 in 173ms (compile: 137ms, render: 36ms)
+ GET /intro-poster.jpg 404 in 155ms (compile: 126ms, render: 29ms)
+ GET /moods/happy.png 404 in 238ms (compile: 195ms, render: 43ms)
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ GET /moods/love.png 404 in 242ms (compile: 216ms, render: 26ms)
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ GET /moods/sleep.png 404 in 146ms (compile: 121ms, render: 25ms)
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ GET /moods/sweat.png 404 in 225ms (compile: 185ms, render: 41ms)
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ GET /moods/fire.png 404 in 226ms (compile: 202ms, render: 24ms)
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ HEAD / 200 in 111ms (compile: 91ms, render: 20ms)
+ GET / 200 in 141ms (compile: 117ms, render: 24ms)
+ GET /intro-poster.jpg 404 in 134ms (compile: 103ms, render: 31ms)
+ GET /moods/happy.png 404 in 346ms (compile: 268ms, render: 79ms)
+ GET /moods/sweat.png 404 in 348ms (compile: 277ms, render: 71ms)
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ GET /moods/sleep.png 404 in 352ms (compile: 309ms, render: 43ms)
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ GET /moods/love.png 404 in 107ms (compile: 87ms, render: 20ms)
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ GET /moods/fire.png 404 in 106ms (compile: 86ms, render: 20ms)
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ HEAD / 200 in 105ms (compile: 84ms, render: 21ms)
+ GET / 200 in 111ms (compile: 88ms, render: 23ms)
+ GET /intro-poster.jpg 404 in 109ms (compile: 88ms, render: 21ms)
+ GET /moods/sweat.png 404 in 216ms (compile: 166ms, render: 50ms)
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ GET /moods/sleep.png 404 in 219ms (compile: 186ms, render: 32ms)
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ GET /moods/happy.png 404 in 125ms (compile: 93ms, render: 32ms)
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ GET /moods/love.png 404 in 206ms (compile: 88ms, render: 118ms)
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ GET /moods/fire.png 404 in 133ms (compile: 111ms, render: 22ms)
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ HEAD / 200 in 127ms (compile: 107ms, render: 20ms)
+ ✓ Compiled in 39ms
+ GET /intro-poster.jpg 404 in 159ms (compile: 139ms, render: 20ms)
+ HEAD / 200 in 470ms (compile: 255ms, render: 215ms)
+ GET / 200 in 171ms (compile: 148ms, render: 22ms)
+ GET /moods/happy.png 404 in 444ms (compile: 188ms, render: 256ms)
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ GET /moods/sweat.png 404 in 550ms (compile: 317ms, render: 233ms)
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ GET /moods/sleep.png 404 in 471ms (compile: 330ms, render: 141ms)
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ GET /moods/love.png 404 in 378ms (compile: 337ms, render: 42ms)
+ GET /moods/fire.png 404 in 245ms (compile: 222ms, render: 23ms)
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ GET / 200 in 130ms (compile: 106ms, render: 24ms)
+ GET /intro-poster.jpg 404 in 108ms (compile: 87ms, render: 21ms)
+ GET /moods/happy.png 404 in 205ms (compile: 166ms, render: 38ms)
+ GET /moods/sleep.png 404 in 283ms (compile: 186ms, render: 98ms)
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ GET /moods/love.png 404 in 104ms (compile: 84ms, render: 19ms)
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ GET /moods/sweat.png 404 in 197ms (compile: 157ms, render: 40ms)
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ GET /moods/fire.png 404 in 198ms (compile: 175ms, render: 23ms)
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ HEAD / 200 in 106ms (compile: 87ms, render: 19ms)
+ ✓ Compiled in 20ms
+ GET / 200 in 439ms (compile: 225ms, render: 213ms)
+ GET / 200 in 134ms (compile: 111ms, render: 22ms)
+ GET / 200 in 116ms (compile: 92ms, render: 24ms)
+ GET /intro-poster.jpg 404 in 111ms (compile: 88ms, render: 22ms)
+ GET /moods/happy.png 404 in 111ms (compile: 92ms, render: 20ms)
+ ⨯ The requested resource isn't a valid image for /moods/happy.png received null
+ GET /moods/sweat.png 404 in 303ms (compile: 172ms, render: 131ms)
+ GET /moods/sleep.png 404 in 304ms (compile: 181ms, render: 123ms)
+ ⨯ The requested resource isn't a valid image for /moods/sweat.png received null
+ ⨯ The requested resource isn't a valid image for /moods/sleep.png received null
+ GET /moods/love.png 404 in 147ms (compile: 124ms, render: 23ms)
+ ⨯ The requested resource isn't a valid image for /moods/love.png received null
+ GET /moods/fire.png 404 in 107ms (compile: 89ms, render: 18ms)
+ ⨯ The requested resource isn't a valid image for /moods/fire.png received null
+ HEAD / 200 in 104ms (compile: 86ms, render: 18ms)

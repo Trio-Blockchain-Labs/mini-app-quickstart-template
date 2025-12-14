@@ -61,6 +61,18 @@ The `minikit.config.ts` file configures your app's manifest.
 To use the custom intro video and mood icons in the home screen, place files under the `public/` folder:
 
 - Put your MP4 video at: `public/intro.mp4` (the homepage will autoplay this video as a background)
+  
+	If your file is named `background.mp4` (recommended), copy it with:
+
+	```bash
+	cp "~/Downloads/WhatsApp Video 2025-12-14 at 15.55.30.mp4" public/background.mp4
+	```
+
+	Or copy it as `intro.mp4` if you prefer the old name:
+
+	```bash
+	cp "~/Downloads/WhatsApp Video 2025-12-14 at 15.55.30.mp4" public/intro.mp4
+	```
 - Optional poster image for browsers that don't autoplay: `public/intro-poster.jpg`
 - Mood images (optional). If you want the custom graphics to show on each mood button, place them as:
 	- `public/moods/cry.png`
