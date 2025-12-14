@@ -59,7 +59,7 @@ export default function ExamplesPage() {
       <section className="w-full max-w-md border p-4 rounded-lg bg-white">
         <h2 className="text-xl font-bold mb-4">1. Wallet Component</h2>
         <p className="mb-4 text-sm text-gray-600">
-          Manages wallet connection and displays user identity.
+          Manages wallet connection and displays user identity ALPEREN.
         </p>
         <div className="flex justify-end">
           <Wallet>
