@@ -1,11 +1,14 @@
 const ROOT_URL =
   process.env.NEXT_PUBLIC_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000');
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
 
 /**
  * MiniApp configuration object. Must follow the Farcaster MiniApp specification.
  *
  * @see {@link https://miniapps.farcaster.xyz/docs/guides/publishing}
+ * @see {@link https://docs.base.org/mini-apps/core-concepts/manifest}
  */
 export const minikitConfig = {
 
@@ -36,4 +39,3 @@ export const minikitConfig = {
     ogImageUrl: `${ROOT_URL}/hero.png`,
   },
 } as const;
-
