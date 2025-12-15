@@ -78,9 +78,19 @@ export default function Game() {
 
   React.useEffect(() => {
     const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d")!;
-    canvas.width = 360;
-    canvas.height = 640;
+    const ctx = canvas.getContext("2d", { alpha: false })!;
+    
+    // High-DPI rendering for crisp graphics
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = 360 * dpr;
+    canvas.height = 640 * dpr;
+    canvas.style.width = '360px';
+    canvas.style.height = '640px';
+    ctx.scale(dpr, dpr);
+    
+    // Enable image smoothing for better quality
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     // preload images
     const playerImg = new Image();
@@ -668,16 +678,16 @@ export default function Game() {
 
       // draw player (kunduz) - prefer sprite
       if (playerImg.complete && playerImg.naturalWidth) {
-        const s = 42;
+        const s = 28;
         ctx.drawImage(playerImg, player.x - s / 2 + shakeX, player.y - s / 2 - 2 + shakeY, s, s);
       } else {
         ctx.save();
         const nowTimeForDraw = performance.now();
         if (player.invulnerableUntil && player.invulnerableUntil > nowTimeForDraw) ctx.globalAlpha = 0.5;
-        ctx.beginPath(); ctx.fillStyle = "#b5651d"; ctx.arc(player.x + shakeX, player.y + shakeY, 14, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.fillStyle = "#b5651d"; ctx.arc(player.x + shakeX, player.y + shakeY, 10, 0, Math.PI * 2); ctx.fill();
         // eyes & sweat when anxious
-        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(player.x - 5 + shakeX, player.y - 4 + shakeY, 3, 4, 0, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.ellipse(player.x + 5 + shakeX, player.y - 4 + shakeY, 3, 4, 0, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(player.x - 4 + shakeX, player.y - 3 + shakeY, 2, 3, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(player.x + 4 + shakeX, player.y - 3 + shakeY, 2, 3, 0, 0, Math.PI*2); ctx.fill();
         ctx.restore();
       }
 
@@ -928,37 +938,47 @@ export default function Game() {
       
       {/* Mobile Controls - Arrow Buttons */}
       {started && !gameOver && (
-        <div style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, zIndex: 9999, pointerEvents: 'auto' }}>
+        <div style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, zIndex: 9999 }}>
           <button 
             onMouseDown={(e) => { e.preventDefault(); keysRef.current.ArrowUp = true; }}
             onMouseUp={(e) => { e.preventDefault(); keysRef.current.ArrowUp = false; }}
+            onMouseLeave={(e) => { keysRef.current.ArrowUp = false; }}
             onTouchStart={(e) => { e.preventDefault(); keysRef.current.ArrowUp = true; }}
             onTouchEnd={(e) => { e.preventDefault(); keysRef.current.ArrowUp = false; }}
-            style={{ width: 60, height: 60, background: '#06b6d4', border: '2px solid #0891b2', borderRadius: 10, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}>
+            style={{ width: 60, height: 60, background: '#06b6d4', border: '2px solid #0891b2', borderRadius: 10, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}>
             ▲
           </button>
           <div style={{ display: 'flex', gap: 8 }}>
             <button 
               onMouseDown={(e) => { e.preventDefault(); keysRef.current.ArrowLeft = true; }}
               onMouseUp={(e) => { e.preventDefault(); keysRef.current.ArrowLeft = false; }}
+              onMouseLeave={(e) => { keysRef.current.ArrowLeft = false; }}
               onTouchStart={(e) => { e.preventDefault(); keysRef.current.ArrowLeft = true; }}
               onTouchEnd={(e) => { e.preventDefault(); keysRef.current.ArrowLeft = false; }}
-              style={{ width: 60, height: 60, background: '#06b6d4', border: '2px solid #0891b2', borderRadius: 10, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}>
+              style={{ width: 60, height: 60, background: '#06b6d4', border: '2px solid #0891b2', borderRadius: 10, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}>
               ◄
             </button>
             <button 
               onMouseDown={(e) => { e.preventDefault(); keysRef.current.ArrowDown = true; }}
               onMouseUp={(e) => { e.preventDefault(); keysRef.current.ArrowDown = false; }}
+              onMouseLeave={(e) => { keysRef.current.ArrowDown = false; }}
               onTouchStart={(e) => { e.preventDefault(); keysRef.current.ArrowDown = true; }}
               onTouchEnd={(e) => { e.preventDefault(); keysRef.current.ArrowDown = false; }}
-              style={{ width: 60, height: 60, background: '#06b6d4', border: '2px solid #0891b2', borderRadius: 10, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}>
+              style={{ width: 60, height: 60, background: '#06b6d4', border: '2px solid #0891b2', borderRadius: 10, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}>
               ▼
             </button>
             <button 
               onMouseDown={(e) => { e.preventDefault(); keysRef.current.ArrowRight = true; }}
               onMouseUp={(e) => { e.preventDefault(); keysRef.current.ArrowRight = false; }}
+              onMouseLeave={(e) => { keysRef.current.ArrowRight = false; }}
               onTouchStart={(e) => { e.preventDefault(); keysRef.current.ArrowRight = true; }}
               onTouchEnd={(e) => { e.preventDefault(); keysRef.current.ArrowRight = false; }}
+              style={{ width: 60, height: 60, background: '#06b6d4', border: '2px solid #0891b2', borderRadius: 10, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent' }}>
+              ►
+            </button>
+          </div>
+        </div>
+      )}
               style={{ width: 60, height: 60, background: '#06b6d4', border: '2px solid #0891b2', borderRadius: 10, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}>
               ►
             </button>
