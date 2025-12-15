@@ -124,6 +124,13 @@ export default function Game() {
     let pelletsCollected = 0; // Track pellets collected for difficulty scaling
 
     function handleKey(e: KeyboardEvent) {
+      // Escape key to toggle menu
+      if (e.type === "keydown" && e.key === "Escape") {
+        e.preventDefault();
+        setMenuOpen(m => !m);
+        return;
+      }
+      
       // ignore controls when the game is over
       if (gameOver) return;
       if (e.type === "keydown") {
@@ -677,46 +684,12 @@ export default function Game() {
       ctx.strokeText(`Score: ${scoreRef.current}`, canvas.width - 120, 28);
       ctx.fillText(`Score: ${scoreRef.current}`, canvas.width - 120, 28);
 
-      // Home icon at top-left
-      const iconSize = 28;
-      const iconX = 14;
-      const iconY = 50;
-      ctx.save();
-      ctx.lineWidth = 2.5;
-      ctx.strokeStyle = "#06b6d4"; // cyan theme color
-      // Roof (filled triangle)
-      ctx.beginPath();
-      ctx.moveTo(iconX + iconSize*0.1, iconY + iconSize*0.6);
-      ctx.lineTo(iconX + iconSize*0.5, iconY + iconSize*0.05);
-      ctx.lineTo(iconX + iconSize*0.9, iconY + iconSize*0.6);
-      ctx.closePath();
-      ctx.fillStyle = "#06b6d4";
-      ctx.fill();
-      ctx.stroke();
-      // Body
-      const bodyX = iconX + iconSize*0.2;
-      const bodyY = iconY + iconSize*0.58;
-      const bodyW = iconSize*0.6;
-      const bodyH = iconSize*0.37;
-      ctx.beginPath();
-      (ctx as any).roundRect(bodyX, bodyY, bodyW, bodyH, 4);
-      ctx.stroke();
-      // Door
-      ctx.beginPath();
-      ctx.moveTo(iconX + iconSize*0.52, iconY + iconSize*0.68);
-      ctx.arc(iconX + iconSize*0.52, iconY + iconSize*0.74, iconSize*0.08, Math.PI, 0, false);
-      ctx.lineTo(iconX + iconSize*0.6, iconY + iconSize*0.95);
-      ctx.lineTo(iconX + iconSize*0.44, iconY + iconSize*0.95);
-      ctx.closePath();
-      ctx.stroke();
-      ctx.restore();
-
-      // Menu dropdown when home icon is clicked
+      // Menu dropdown (no icon, just menu)
       if (menuOpen) {
         const menuW = 140;
         const menuH = 90;
-        const menuX = iconX;
-        const menuY = iconY + iconSize + 6;
+        const menuX = 14;
+        const menuY = 78;
         ctx.save();
         ctx.globalAlpha = 0.95;
         ctx.fillStyle = "#1e293b";
@@ -769,53 +742,63 @@ export default function Game() {
 
     req = requestAnimationFrame(step);
 
-    // Touch swipe handlers
+    // Touch continuous control handlers
+    let touchMoveInterval: NodeJS.Timeout | null = null;
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length > 0) {
         touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       }
     };
-    const handleTouchEnd = (e: TouchEvent) => {
-      if (!touchStart.current) return;
-      const touchEnd = { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-      const dx = touchEnd.x - touchStart.current.x;
-      const dy = touchEnd.y - touchStart.current.y;
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!touchStart.current || e.touches.length === 0) return;
+      const currentTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      const dx = currentTouch.x - touchStart.current.x;
+      const dy = currentTouch.y - touchStart.current.y;
       const distance = Math.max(Math.abs(dx), Math.abs(dy));
-      if (distance > 40) {
+      
+      // Continuous movement while touch is held
+      if (distance > 30) {
         if (Math.abs(dx) > Math.abs(dy)) {
-          if (dx < 0) keys.ArrowLeft = true;
-          else keys.ArrowRight = true;
-          setTimeout(() => { keys.ArrowLeft = false; keys.ArrowRight = false; }, 100);
+          keys.ArrowLeft = dx < 0;
+          keys.ArrowRight = dx > 0;
+          keys.ArrowUp = false;
+          keys.ArrowDown = false;
         } else {
-          if (dy < 0) keys.ArrowUp = true;
-          else keys.ArrowDown = true;
-          setTimeout(() => { keys.ArrowUp = false; keys.ArrowDown = false; }, 100);
+          keys.ArrowUp = dy < 0;
+          keys.ArrowDown = dy > 0;
+          keys.ArrowLeft = false;
+          keys.ArrowRight = false;
         }
       }
+    };
+    const handleTouchEnd = (e: TouchEvent) => {
+      // Release all movement keys
+      keys.ArrowLeft = false;
+      keys.ArrowRight = false;
+      keys.ArrowUp = false;
+      keys.ArrowDown = false;
       touchStart.current = null;
+      if (touchMoveInterval) {
+        clearInterval(touchMoveInterval);
+        touchMoveInterval = null;
+      }
+    };
+    const handleTouchCancel = (e: TouchEvent) => {
+      handleTouchEnd(e);
     };
 
-    // Canvas click handler for home menu
+    // Canvas click handler for menu
     const handleCanvasClick = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      const iconSize = 28;
-      const iconX = 14;
-      const iconY = 50;
-      
-      // Home icon click
-      if (x >= iconX && x <= iconX + iconSize && y >= iconY && y <= iconY + iconSize) {
-        setMenuOpen(m => !m);
-        return;
-      }
       
       // Menu click detection
       if (menuOpen) {
         const menuW = 140;
         const menuH = 90;
-        const menuX = iconX;
-        const menuY = iconY + iconSize + 6;
+        const menuX = 14;
+        const menuY = 78;
         if (x >= menuX && x <= menuX + menuW && y >= menuY && y <= menuY + menuH) {
           if (y <= menuY + 30) {
             setRunning(true);
@@ -834,7 +817,9 @@ export default function Game() {
     };
 
     canvas.addEventListener('touchstart', handleTouchStart, false);
+    canvas.addEventListener('touchmove', handleTouchMove, false);
     canvas.addEventListener('touchend', handleTouchEnd, false);
+    canvas.addEventListener('touchcancel', handleTouchCancel, false);
     canvas.addEventListener('click', handleCanvasClick, false);
 
     return () => {
@@ -842,7 +827,9 @@ export default function Game() {
       window.removeEventListener("keydown", handleKey);
       window.removeEventListener("keyup", handleKey);
       canvas.removeEventListener('touchstart', handleTouchStart, false);
+      canvas.removeEventListener('touchmove', handleTouchMove, false);
       canvas.removeEventListener('touchend', handleTouchEnd, false);
+      canvas.removeEventListener('touchcancel', handleTouchCancel, false);
       canvas.removeEventListener('click', handleCanvasClick, false);
     };
   }, [runKey]);
@@ -928,13 +915,6 @@ export default function Game() {
           </div>
         )}
       </div>
-      <div className="flex gap-4 mt-4">
-        <div className="text-lg text-gray-300">Arrow keys / WASD — Shift: Dash — Space: Breathe</div>
-      </div>
-      <div className="text-xl font-bold text-gray-200 mt-3">Lives: <span className="text-red-400">{lives}</span> — Score: <span className="text-yellow-400">{score}</span></div>
-      {!running && started && !gameOver && (
-        <div className="mt-2 text-base text-yellow-200">Paused — Press any key to continue</div>
-      )}
     </div>
   );
 }
