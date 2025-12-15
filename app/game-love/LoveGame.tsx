@@ -42,12 +42,14 @@ function randomTarget(id: number, level: number): Target {
   else if (tRand > 0.92) type = "bonus";
   const y = 80 + Math.random() * 220;
   const vx = (Math.random() < 0.5 ? -1 : 1) * (2 + Math.random() * (2 + level * 0.5));
+  // lover ve broken tipleri için dikeyde de rastgele hareket
+  const vy = (type === "lover" || type === "broken") ? (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * (1 + level * 0.2)) : 0;
   return {
     id,
     x: Math.random() * (CANVAS_W - 2 * TARGET_RADIUS) + TARGET_RADIUS,
     y,
     vx,
-    vy: 0,
+    vy,
     type,
     radius: TARGET_RADIUS + (type === "lover" ? Math.random() * 12 : 0),
     hit: false,
@@ -71,6 +73,17 @@ export default function LoveGame() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const beaverImgRef = useRef<HTMLImageElement | null>(null);
   const brokenHeartImgRef = useRef<HTMLImageElement | null>(null);
+  const coupleImgRef = useRef<HTMLImageElement | null>(null);
+
+  const arrowImgRef = useRef<HTMLImageElement | null>(null);
+  // Ok görselini yükle (hook kurallarına uygun şekilde en üstte, sadece bir tane)
+  useEffect(() => {
+    if (!arrowImgRef.current) {
+      const img = new window.Image();
+      img.src = "/love%20game/arrow.png";
+      arrowImgRef.current = img;
+    }
+  }, []);
   const [arrows, setArrows] = useState<Arrow[]>([]);
   const [targets, setTargets] = useState<Target[]>([]);
   const [score, setScore] = useState(0);
@@ -108,10 +121,21 @@ export default function LoveGame() {
   // --- Zamanlayıcı ---
   useEffect(() => {
     if (gameOver) return;
-    if (timer <= 0) { setGameOver(true); return; }
-    const t = setInterval(() => setTimer(ti => ti-1), 1000);
-    return () => clearInterval(t);
-  }, [timer, gameOver]);
+    let t: NodeJS.Timeout | null = null;
+    if (timer > 0) {
+      t = setInterval(() => {
+        setTimer(ti => {
+          if (ti <= 1) {
+            if (!gameOver) setGameOver(true);
+            return 0;
+          }
+          return ti - 1;
+        });
+      }, 1000);
+    }
+    return () => { if (t) clearInterval(t); };
+    // Sadece gameOver ve level değişince başlasın
+  }, [gameOver, level]);
 
   // --- Hedefleri ve Okları Güncelle ---
   useEffect(() => {
@@ -119,8 +143,16 @@ export default function LoveGame() {
     const anim = setInterval(() => {
       setTargets(ts => ts.map(t => {
         let nx = t.x + t.vx + wind;
+        let ny = t.y + t.vy;
+        // lover ve broken tipleri ekranda rastgele hareket etsin (hem yatay hem dikey)
         if (nx < t.radius || nx > CANVAS_W-t.radius) t.vx *= -1;
-        return {...t, x: Math.max(t.radius, Math.min(CANVAS_W-t.radius, nx))};
+        if ((t.type === "lover" || t.type === "broken") && (ny < t.radius+40 || ny > CANVAS_H-t.radius-120)) t.vy *= -1;
+        // bonus ve timer sadece yatayda hareket
+        if (t.type === "lover" || t.type === "broken") {
+          return {...t, x: Math.max(t.radius, Math.min(CANVAS_W-t.radius, nx)), y: Math.max(t.radius+40, Math.min(CANVAS_H-t.radius-120, ny))};
+        } else {
+          return {...t, x: Math.max(t.radius, Math.min(CANVAS_W-t.radius, nx))};
+        }
       }));
       setArrows(arrs => arrs.map(a => ({...a, x: a.x + a.vx + wind, y: a.y + a.vy}))
         .filter(a => a.y > -40 && a.active));
@@ -132,6 +164,7 @@ export default function LoveGame() {
   useEffect(() => {
     if (gameOver) return;
     setArrows(arrs => arrs.map(a => {
+      // Çarpışma kontrolü burada olmalı, canvas kodu değil!
       for (const t of targets) {
         if (!t.hit && Math.hypot(a.x-t.x, a.y-t.y) < t.radius) {
           t.hit = true;
@@ -188,7 +221,8 @@ export default function LoveGame() {
     // Hedefler
     for(const t of targets){
       ctx.save();
-      if(t.type!=="broken") {
+      // Sadece bonus ve timer için arka plan dairesi çiz
+      if(t.type==="bonus" || t.type==="timer") {
         ctx.beginPath();
         ctx.arc(t.x, t.y, t.radius, 0, 2*Math.PI);
         ctx.fillStyle = getTargetColor(t.type);
@@ -200,10 +234,21 @@ export default function LoveGame() {
       // Hedef tipi simgesi veya görseli
       ctx.save();
       if(t.type==="lover") {
-        ctx.font = "bold 22px sans-serif";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("💑", t.x, t.y);
+        const img = coupleImgRef.current;
+        if (img && img.complete) {
+          const scale = 0.05;
+          const w = img.width * scale;
+          const h = img.height * scale;
+          ctx.drawImage(img, t.x - w/2, t.y - h/2, w, h);
+        } else if (img) {
+          img.onload = () => {
+            if (!ctx) return;
+            const scale = 0.05;
+            const w = img.width * scale;
+            const h = img.height * scale;
+            ctx.drawImage(img, t.x - w/2, t.y - h/2, w, h);
+          };
+        }
       }
       if(t.type==="bonus") {
         ctx.font = "bold 22px sans-serif";
@@ -240,14 +285,16 @@ export default function LoveGame() {
     for(const a of arrows){
       if(!a.active) continue;
       ctx.save();
-      ctx.strokeStyle = getArrowColor();
-      ctx.lineWidth = 6;
-      ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(a.x, a.y-32);
-      ctx.stroke();
-      ctx.font = "20px sans-serif";
-      ctx.fillText("🏹", a.x, a.y-20);
+      const img = arrowImgRef.current;
+      if (img && img.complete) {
+        const scale = 0.13;
+        const w = img.width * scale;
+        const h = img.height * scale;
+        ctx.translate(a.x, a.y);
+        // Okun açısı: sadece yukarı fırlatıldığı için -90 derece
+        ctx.rotate(-Math.PI/2);
+        ctx.drawImage(img, -w/2, -h/2, w, h);
+      }
       ctx.restore();
     }
     // Beaver görseli (%10 boyutunda, orantılı)
@@ -374,6 +421,14 @@ export default function LoveGame() {
       const img = new window.Image();
       img.src = "/love%20game/broken-heart.png";
       brokenHeartImgRef.current = img;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!coupleImgRef.current) {
+      const img = new window.Image();
+      img.src = "/love%20game/couple.png";
+      coupleImgRef.current = img;
     }
   }, []);
 

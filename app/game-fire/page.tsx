@@ -237,39 +237,38 @@ export default function GameFirePage() {
       {/* Start ekranı */}
       {/* Game Over ekranı */}
   {gameOver && (
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "#3a001aee",
-          zIndex: 30,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: 18,
-        }}>
-          <img src="/fireandbeaver/boom.png" alt="Patlama" style={{ width: 120, height: 120, marginBottom: 18, borderRadius: "50%", boxShadow: "0 4px 24px #b8000033", animation: "boom-anim 1.2s infinite alternate" }} />
-          <h2 style={{ color: "#fff", fontWeight: 900, fontSize: 32, margin: 0, marginBottom: 10, letterSpacing: 2 }}>GAME OVER</h2>
-          <div style={{ color: "#fff", fontSize: 20, marginBottom: 18, textAlign: "center", maxWidth: 260 }}>
-            Çok fazla ateş patladı veya skor çok düştü!<br />Skorun: <b>{score}</b>
-          </div>
-          <div style={{ display: "flex", gap: 16 }}>
-            <button onClick={() => {
-              setScore(0);
-              setFires([]);
-              setGameOver(false);
-              setPlaying(false);
-              setSpawnInterval(INITIAL_SPAWN);
-              setFireLifespan(INITIAL_LIFESPAN);
-            }} style={{ fontSize: 22, padding: "12px 38px", borderRadius: 12, background: "#fff", color: "#b80000", fontWeight: 700, border: "none", boxShadow: "0 2px 8px #b8000033", marginBottom: 10 }}>Tekrar Oyna</button>
-            <button onClick={() => router.push("/")} style={{ fontSize: 22, padding: "12px 38px", borderRadius: 12, background: "#fff", color: "#1e90ff", fontWeight: 700, border: "none", boxShadow: "0 2px 8px #1e90ff33", marginBottom: 10 }}>Geri Dön</button>
-          </div>
-        </div>
-      )}
-      {/* Start ekranı */}
+    <div style={{
+      position: "absolute",
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      background: "#3a001aee",
+      zIndex: 30,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 18,
+    }}>
+      <img src="/fireandbeaver/boom.png" alt="Patlama" style={{ width: 120, height: 120, marginBottom: 18, borderRadius: "50%", boxShadow: "0 4px 24px #b8000033", animation: "boom-anim 1.2s infinite alternate" }} />
+      <h2 style={{ color: "#fff", fontWeight: 900, fontSize: 32, margin: 0, marginBottom: 10, letterSpacing: 2 }}>GAME OVER</h2>
+      <div style={{ color: "#fff", fontSize: 20, marginBottom: 18, textAlign: "center", maxWidth: 260 }}>
+        Çok fazla ateş patladı veya skor çok düştü!<br />Skorun: <b>{score}</b>
+      </div>
+      <div style={{ display: "flex", gap: 16 }}>
+        <button onClick={() => {
+          setScore(0);
+          setFires([]);
+          setGameOver(false);
+          setPlaying(false);
+          setSpawnInterval(INITIAL_SPAWN);
+          setFireLifespan(INITIAL_LIFESPAN);
+        }} style={{ fontSize: 22, padding: "12px 38px", borderRadius: 12, background: "#fff", color: "#b80000", fontWeight: 700, border: "none", boxShadow: "0 2px 8px #b8000033", marginBottom: 10 }}>Tekrar Oyna</button>
+        <button onClick={() => router.push("/")} style={{ fontSize: 22, padding: "12px 38px", borderRadius: 12, background: "#fff", color: "#1e90ff", fontWeight: 700, border: "none", boxShadow: "0 2px 8px #1e90ff33", marginBottom: 10 }}>Geri Dön</button>
+      </div>
+    </div>
+  )}
       {win && (
         <div style={{
           position: "absolute",
@@ -448,7 +447,5 @@ export default function GameFirePage() {
 }
 `}</style>
       </div>
-
-    </div>
-  )
+  );
 }
