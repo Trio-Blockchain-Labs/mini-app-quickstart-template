@@ -38,8 +38,8 @@ function randomTarget(id: number, level: number): Target {
   const tRand = Math.random();
   let type: TargetType = "lover";
   if (tRand < 0.20) type = "broken";
-  else if (tRand > 0.95) type = "timer"; // biraz daha sık
-  else if (tRand > 0.85) type = "bonus";
+  else if (tRand > 0.97) type = "timer"; // çok nadir
+  else if (tRand > 0.90) type = "bonus";
   const y = 80 + Math.random() * 180;
   const vx = (Math.random() < 0.5 ? -1 : 1) * (3 + Math.random() * (3 + level * 0.8));
   // lover ve broken tipleri için dikeyde de rastgele hareket
@@ -103,10 +103,6 @@ export default function LoveGame() {
   const [effect, setEffect] = useState<{x:number,y:number,type:string}|null>(null);
   const [lastHitType, setLastHitType] = useState<TargetType|null>(null);
   const [gameStarted, setGameStarted] = useState(false);
-  const [dragStart, setDragStart] = useState<{x:number, y:number}|null>(null);
-  const [dragCurrent, setDragCurrent] = useState<{x:number, y:number}|null>(null);
-  const [paused, setPaused] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   // --- Oyun Başlat ---
   useEffect(() => {
@@ -125,7 +121,7 @@ export default function LoveGame() {
     setEffect(null);
     setLastHitType(null);
     // eslint-disable-next-line
-  }, [gameOver, level, gameStarted]);
+  }, [gameOver, level]);
 
   // --- Zamanlayıcı ---
   useEffect(() => {
@@ -144,7 +140,7 @@ export default function LoveGame() {
     }
     return () => { if (t) clearInterval(t); };
     // Sadece gameOver ve level değişince başlasın
-  }, [gameOver, level, gameStarted]);
+  }, [gameOver, level]);
 
   // --- Rüzgar Zamanlayıcı ---
   useEffect(() => {
@@ -162,7 +158,7 @@ export default function LoveGame() {
       }, 1000);
     }
     return () => { if (t) clearInterval(t); };
-  }, [gameOver, windActive, gameStarted]);
+  }, [gameOver, windActive]);
 
   // --- Hedefleri ve Okları Güncelle ---
   useEffect(() => {
@@ -185,7 +181,7 @@ export default function LoveGame() {
         .filter(a => a.y > -40 && a.active));
     }, 16);
     return () => clearInterval(anim);
-  }, [gameOver, wind, gameStarted, windActive]);
+  }, [gameOver, wind]);
 
   // --- Çarpışma ve Skor ---
   useEffect(() => {
@@ -201,10 +197,9 @@ export default function LoveGame() {
     let newLastHitType: any = null;
     
     // Check collisions
-    const ARROW_HITBOX = 14; // ok ucu yarıçapı ekle
     const updatedArrows = arrows.map(a => {
       for (const t of targets) {
-        if (!t.hit && Math.hypot(a.x-t.x, a.y-t.y) < t.radius + ARROW_HITBOX) {
+        if (!t.hit && Math.hypot(a.x-t.x, a.y-t.y) < t.radius) {
           t.hit = true;
           newLastHitType = t.type;
           newEffect = {x:t.x, y:t.y, type:t.type};
@@ -219,7 +214,6 @@ export default function LoveGame() {
           } else if (t.type === "broken") {
             comboChange = -combo; // Reset combo
             energyChange -= 30;
-            timerChange -= 5; // Penalty: lose time when hitting broken hearts
           }
           a.active = false;
         }
@@ -284,18 +278,6 @@ export default function LoveGame() {
       ctx.arc(60+i*90,60+20*Math.sin(i),40+10*Math.cos(i),0,2*Math.PI);
       ctx.fillStyle="#fff";
       ctx.fill();
-      ctx.restore();
-    }
-    // Ekranda dönen süsler (kalpler)
-    const t = Date.now()*0.0015;
-    for(let i=0;i<6;i++){
-      const orbitR = 40 + i*12;
-      const cx = CANVAS_W/2 + Math.cos(t + i)*orbitR;
-      const cy = 140 + Math.sin(t*1.3 + i*0.8)* (24+i*2);
-      ctx.save();
-      ctx.globalAlpha = 0.25;
-      ctx.font = "20px sans-serif";
-      ctx.fillText("❤", cx, cy);
       ctx.restore();
     }
     // Hedefler
@@ -367,13 +349,12 @@ export default function LoveGame() {
       ctx.save();
       const img = arrowImgRef.current;
       if (img && img.complete) {
-        const scale = 0.3;
+        const scale = 0.13;
         const w = img.width * scale;
         const h = img.height * scale;
         ctx.translate(a.x, a.y);
-        // Okun açısı
-        const angle = Math.atan2(a.vy, a.vx);
-        ctx.rotate(angle + Math.PI/2);
+        // Okun açısı: sadece yukarı fırlatıldığı için -90 derece
+        ctx.rotate(-Math.PI/2);
         ctx.drawImage(img, -w/2, -h/2, w, h);
       }
       ctx.restore();
@@ -386,56 +367,6 @@ export default function LoveGame() {
       const drawH = img.height * scale;
       ctx.drawImage(img, beaverX - drawW / 2, BEAVER_Y - drawH / 2, drawW, drawH);
     }
-    
-    // Yay çekme görseli
-    if (charging && dragStart && dragCurrent) {
-      ctx.save();
-      const dx = dragStart.x - dragCurrent.x;
-      const dy = dragStart.y - dragCurrent.y;
-      const distance = Math.sqrt(dx*dx + dy*dy);
-      
-      // Çekme çizgisi
-      ctx.strokeStyle = "#e75480";
-      ctx.lineWidth = 5;
-      ctx.setLineDash([7, 7]);
-      ctx.beginPath();
-      ctx.moveTo(beaverX, BEAVER_Y-32);
-      ctx.lineTo(dragCurrent.x, dragCurrent.y);
-      ctx.stroke();
-      
-      // Yön oku
-      ctx.setLineDash([]);
-      ctx.fillStyle = "#e75480";
-      ctx.globalAlpha = 0.65;
-      const arrowLength = Math.min(distance * 1.0, 140);
-      const angle = Math.atan2(dy, dx);
-      const anchorX = dragStart.x;
-      const anchorY = dragStart.y;
-      const arrowX = anchorX + Math.cos(angle) * arrowLength;
-      const arrowY = anchorY + Math.sin(angle) * arrowLength;
-      ctx.beginPath();
-      ctx.moveTo(arrowX, arrowY);
-      ctx.lineTo(arrowX - Math.cos(angle - 0.4) * 22, arrowY - Math.sin(angle - 0.4) * 22);
-      ctx.lineTo(arrowX - Math.cos(angle + 0.4) * 22, arrowY - Math.sin(angle + 0.4) * 22);
-      ctx.closePath();
-      ctx.fill();
-      
-      // Güç göstergesi
-      ctx.globalAlpha = 1;
-      ctx.font = "bold 16px sans-serif";
-      ctx.fillStyle = "#e75480";
-      const powerPercent = Math.min(distance / 170 * 100, 100).toFixed(0);
-      ctx.fillText(`${powerPercent}%`, beaverX, BEAVER_Y - 70);
-      // Yay merkez halkası
-      ctx.strokeStyle = "#e75480";
-      ctx.lineWidth = 2;
-      ctx.globalAlpha = 0.5;
-      ctx.beginPath();
-      ctx.arc(beaverX, BEAVER_Y-32, Math.min(distance, 80), 0, Math.PI*2);
-      ctx.stroke();
-      ctx.restore();
-    }
-    
     // Enerji barı
     ctx.save();
     ctx.fillStyle = "#b71c1c";
@@ -478,80 +409,6 @@ export default function LoveGame() {
     ctx.fillText(windActive ? `🌬️ ${wind>0?"→":"←"} ${Math.abs(wind).toFixed(1)} (${windTimer}s)` : `🌬️ Kapalı`, CANVAS_W/2, CANVAS_H-20);
     ctx.textAlign = "center";
     ctx.restore();
-
-    // Sağ üst: pembe Home simgesi (ikon) ve tıklanınca açılan menü
-    const iconSize = 30;
-    // Saate soluna alınmış konum (daha fazla boşluk)
-    const iconX = CANVAS_W - iconSize - 100;
-    const iconY = 10;
-    // Çatı + ev çizimi
-    ctx.save();
-    ctx.lineWidth = 2.5;
-    ctx.strokeStyle = "#e75480"; // pembe
-    // Çatı (dolu üçgen)
-    ctx.beginPath();
-    ctx.moveTo(iconX + iconSize*0.1, iconY + iconSize*0.6);
-    ctx.lineTo(iconX + iconSize*0.5, iconY + iconSize*0.05);
-    ctx.lineTo(iconX + iconSize*0.9, iconY + iconSize*0.6);
-    ctx.closePath();
-    ctx.fillStyle = "#e75480";
-    ctx.fill();
-    ctx.stroke();
-    // Gövde (yuvarlatılmış köşe)
-    const bodyX = iconX + iconSize*0.2;
-    const bodyY = iconY + iconSize*0.58;
-    const bodyW = iconSize*0.6;
-    const bodyH = iconSize*0.37;
-    ctx.beginPath();
-    (ctx as any).roundRect(bodyX, bodyY, bodyW, bodyH, 5);
-    ctx.stroke();
-    // Kapı (yuvarlak üst)
-    ctx.beginPath();
-    ctx.moveTo(iconX + iconSize*0.52, iconY + iconSize*0.68);
-    ctx.arc(iconX + iconSize*0.52, iconY + iconSize*0.74, iconSize*0.08, Math.PI*1.0, Math.PI*0, false);
-    ctx.lineTo(iconX + iconSize*0.6, iconY + iconSize*0.95);
-    ctx.lineTo(iconX + iconSize*0.44, iconY + iconSize*0.95);
-    ctx.closePath();
-    ctx.stroke();
-    // Pencere (kalp)
-    const hx = iconX + iconSize*0.34;
-    const hy = iconY + iconSize*0.74;
-    const hs = iconSize*0.06;
-    ctx.beginPath();
-    ctx.moveTo(hx, hy);
-    ctx.bezierCurveTo(hx - hs, hy - hs, hx - hs*1.6, hy + hs*0.6, hx, hy + hs*1.4);
-    ctx.bezierCurveTo(hx + hs*1.6, hy + hs*0.6, hx + hs, hy - hs, hx, hy);
-    ctx.strokeStyle = "#e75480";
-    ctx.stroke();
-    ctx.restore();
-
-    // Menü açıksa altına 3 seçeneklik panel
-    if (menuOpen) {
-      const menuW = 140;
-      const menuH = 90;
-      const menuX = CANVAS_W - menuW - 14;
-      const menuY = iconY + iconSize + 6;
-      ctx.save();
-      ctx.globalAlpha = 0.95;
-      ctx.fillStyle = "#ffffff";
-      ctx.strokeStyle = "#e75480";
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.roundRect(menuX, menuY, menuW, menuH, 10 as any);
-      ctx.fill();
-      ctx.stroke();
-      ctx.restore();
-
-      // Seçenekler metinleri
-      ctx.save();
-      ctx.font = "14px sans-serif";
-      ctx.fillStyle = "#333";
-      ctx.textAlign = "left";
-      ctx.fillText("Resume", menuX + 12, menuY + 26);
-      ctx.fillText("Restart", menuX + 12, menuY + 50);
-      ctx.fillText("Home", menuX + 12, menuY + 74);
-      ctx.restore();
-    }
     // Game over
     if(gameOver){
       ctx.save();
@@ -560,117 +417,48 @@ export default function LoveGame() {
       ctx.fillRect(0, CANVAS_H/2-80, CANVAS_W, 160);
       ctx.globalAlpha = 1;
       ctx.fillStyle = "#e75480";
-      ctx.textAlign = "center";
       ctx.font = "bold 32px sans-serif";
-      ctx.fillText("Game Over!", CANVAS_W/2, CANVAS_H/2-10);
+      ctx.fillText("Oyun Bitti!", CANVAS_W/2, CANVAS_H/2-10);
       ctx.font = "bold 22px sans-serif";
-      ctx.fillText(`Score: ${score}`, CANVAS_W/2, CANVAS_H/2+32);
+      ctx.fillText(`Skorun: ${score}`, CANVAS_W/2, CANVAS_H/2+32);
       ctx.restore();
     }
-  }, [arrows, targets, score, combo, energy, timer, gameOver, effect, wind, beaverX, charging, dragStart, dragCurrent]);
+  }, [arrows, targets, score, combo, energy, timer, gameOver, effect, wind, beaverX]);
 
   // --- Kontroller: Basılı tut/çek ---
   function handlePointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
     if (gameOver || !gameStarted) return;
-    const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    // Home ikonu tıklaması ve menü
-    const iconSize = 30;
-    const iconX = CANVAS_W - iconSize - 100;
-    const iconY = 10;
-    if (x >= iconX && x <= iconX + iconSize && y >= iconY && y <= iconY + iconSize) {
-      setMenuOpen(m => !m);
-      return;
-    }
-    if (menuOpen) {
-      const menuW = 140;
-      const menuH = 90;
-      const menuX = CANVAS_W - menuW - 14;
-      const menuY = iconY + iconSize + 6;
-      if (x >= menuX && x <= menuX + menuW && y >= menuY && y <= menuY + menuH) {
-        // Üç satır: Resume, Restart, Home
-        if (y <= menuY + 30) {
-          setPaused(false);
-          setMenuOpen(false);
-          return;
-        } else if (y <= menuY + 60) {
-          setMenuOpen(false);
-          handleRestart();
-          return;
-        } else {
-          setMenuOpen(false);
-          handleHome();
-          return;
-        }
-      } else {
-        // Menü dışında tıklandıysa kapat
-        setMenuOpen(false);
-      }
-    }
-    // Yayın başlangıç noktası kunduzun yayı olsun
-    setDragStart({x: beaverX, y: BEAVER_Y-32});
-    setDragCurrent({x, y});
     setCharging(true);
     setChargeStart(Date.now());
   }
-  
   function handlePointerUp(e: React.PointerEvent<HTMLCanvasElement>) {
-    if (gameOver || !gameStarted || paused || menuOpen || !charging || chargeStart === null || !dragStart || !dragCurrent) return;
+    if (gameOver || !gameStarted || !charging || chargeStart === null) return;
     setCharging(false);
-    
-    // Çekme mesafesi ve yönünü hesapla
-    const pullX = dragCurrent.x - dragStart.x;
-    const pullY = dragCurrent.y - dragStart.y;
-    const distance = Math.sqrt(pullX*pullX + pullY*pullY);
-    const maxDistance = 170;
-    const power = Math.max(0.8, Math.min(distance / maxDistance, 1) * 1.6 + 0.4);
-    if (distance < 5) {
-      setDragStart(null);
-      setDragCurrent(null);
-      return;
-    }
-
-    // Ok yönünü hesapla (çekişin tersine, yaydan ileri)
-    const angle = Math.atan2(-pullY, -pullX);
-    const speed = ARROW_SPEED * power * 1.1;
-    
+    const duration = Math.min(1200, Date.now() - chargeStart);
+    const power = 0.5 + duration / 1200;
     // Okun yönü ve gücü
     setArrows(arrs => [
       ...arrs,
       {
         x: beaverX,
         y: BEAVER_Y-32,
-        vx: Math.cos(angle) * speed + (windActive ? wind*0.5 : 0),
-        vy: Math.sin(angle) * speed,
+        vx: windActive ? wind*0.5 : 0,
+        vy: -ARROW_SPEED*power,
         power,
         active: true,
       },
     ]);
     setArrowAnim(true);
     setTimeout(()=>setArrowAnim(false), 200);
-    setDragStart(null);
-    setDragCurrent(null);
   }
-  
   function handlePointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
     if (gameOver || !gameStarted) return;
     // Mobilde nişan için X eksenini takip et
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
     let x = e.clientX - rect.left;
-    let y = e.clientY - rect.top;
     x = Math.max(40, Math.min(CANVAS_W-40, x));
-    // Çekerken kunduz pozisyonunu sabit tut, bırakınca güncelle
-    if (!charging) {
-      setBeaverX(x);
-    }
-    
-    // Eğer yay çekiyorsak, çekme pozisyonunu güncelle
-    if (charging && dragStart) {
-      setDragCurrent({x, y});
-    }
+    setBeaverX(x);
   }
-  
   function handleRestart() {
     setScore(0);
     setCombo(0);
@@ -687,23 +475,6 @@ export default function LoveGame() {
   }
 
   function handleStart() {
-    // Oyunu temiz başlat
-    setScore(0);
-    setCombo(0);
-    setEnergy(100);
-    setTimer(GAME_TIME);
-    setLevel(1);
-    setGameOver(false);
-    setPowerUp(null);
-    setWind((Math.random()-0.5)*4);
-    setWindActive(true);
-    setWindTimer(8);
-    setEffect(null);
-    setLastHitType(null);
-    setDragStart(null);
-    setDragCurrent(null);
-    setArrows([]);
-    setTargets(Array.from({length: 6}, (_,i) => randomTarget(i, 1)));
     setGameStarted(true);
   }
 
@@ -746,29 +517,7 @@ export default function LoveGame() {
   }, []);
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#f7eaff", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative" }}>
-      {!gameStarted && !gameOver && (
-        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.35)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16, zIndex: 2 }}>
-          <div style={{ background: "#fff", padding: 20, borderRadius: 16, boxShadow: "0 4px 24px #e75480a0", maxWidth: 360, width: "100%", textAlign: "center" }}>
-            <div style={{ color: "#e75480", fontWeight: 800, fontSize: 22, marginBottom: 10 }}>Cupid Beaver</div>
-            <div style={{ color: "#555", fontSize: 14, lineHeight: 1.5, marginBottom: 12 }}>
-              Pull and hold anywhere on the screen, aim backwards like a bow, then release to shoot.
-              The longer you pull, the stronger the shot.
-            </div>
-            <div style={{ color: "#777", fontSize: 13, lineHeight: 1.4, marginBottom: 14 }}>
-              ❤ Lover: +10 score • 💛 Bonus: +50 • ⏰ Timer: +5s • Broken heart: -30 energy & -5s
-            </div>
-            <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
-              <button onClick={handleStart} style={{ fontSize: 18, background: "#e75480", color: "#fff", border: 0, borderRadius: 12, padding: "10px 22px", fontWeight: 700 }}>
-                Start
-              </button>
-              <button onClick={handleHome} aria-label="Home" title="Home" style={{ fontSize: 20, background: "#999", color: "#fff", border: 0, borderRadius: 12, padding: "10px 18px", fontWeight: 700 }}>
-                🏠
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+    <div style={{ width: "100vw", height: "100vh", background: "#f7eaff", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
       <canvas
         ref={canvasRef}
         width={CANVAS_W}
@@ -778,33 +527,38 @@ export default function LoveGame() {
         onPointerUp={handlePointerUp}
         onPointerMove={handlePointerMove}
       />
-      {(gameStarted || gameOver) && (
-        <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap", justifyContent: "center", zIndex: 1 }}>
-          {gameOver && (
-            <>
-              <button onClick={handleRestart} style={{ fontSize: 18, background: "#e75480", color: "#fff", border: 0, borderRadius: 12, padding: "10px 28px", fontWeight: 700 }}>
-                Restart
-              </button>
-              <button onClick={handleHome} aria-label="Home" title="Home" style={{ fontSize: 20, background: "#999", color: "#fff", border: 0, borderRadius: 12, padding: "10px 18px", fontWeight: 700 }}>
-                🏠
-              </button>
-            </>
-          )}
-          {gameStarted && !gameOver && (
-            <>
-              <button onClick={toggleWind} style={{ fontSize: 16, background: windActive ? "#6ec6ff" : "#999", color: "#fff", border: 0, borderRadius: 12, padding: "10px 24px", fontWeight: 700 }}>
-                {windActive ? "🌬️ Wind Off" : "🌬️ Wind On"}
-              </button>
-              <button onClick={() => { /* resume placeholder */ }} style={{ fontSize: 16, background: "#e75480", color: "#fff", border: 0, borderRadius: 12, padding: "10px 24px", fontWeight: 700 }}>
-                Resume
-              </button>
-              <button onClick={handleHome} aria-label="Home" title="Home" style={{ fontSize: 20, background: "#999", color: "#fff", border: 0, borderRadius: 12, padding: "8px 16px", fontWeight: 700 }}>
-                🏠
-              </button>
-            </>
-          )}
-        </div>
-      )}
+      <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap", justifyContent: "center" }}>
+        {!gameStarted && !gameOver && (
+          <>
+            <button onClick={handleStart} style={{ fontSize: 18, background: "#e75480", color: "#fff", border: 0, borderRadius: 12, padding: "10px 28px", fontWeight: 700 }}>
+              Start
+            </button>
+            <button onClick={handleHome} style={{ fontSize: 18, background: "#999", color: "#fff", border: 0, borderRadius: 12, padding: "10px 28px", fontWeight: 700 }}>
+              Home
+            </button>
+          </>
+        )}
+        {gameOver && (
+          <>
+            <button onClick={handleRestart} style={{ fontSize: 18, background: "#e75480", color: "#fff", border: 0, borderRadius: 12, padding: "10px 28px", fontWeight: 700 }}>
+              Play Again
+            </button>
+            <button onClick={handleHome} style={{ fontSize: 18, background: "#999", color: "#fff", border: 0, borderRadius: 12, padding: "10px 28px", fontWeight: 700 }}>
+              Home
+            </button>
+          </>
+        )}
+        {gameStarted && !gameOver && (
+          <>
+            <button onClick={toggleWind} style={{ fontSize: 16, background: windActive ? "#6ec6ff" : "#999", color: "#fff", border: 0, borderRadius: 12, padding: "10px 24px", fontWeight: 700 }}>
+              {windActive ? "🌬️ Wind Off" : "🌬️ Wind On"}
+            </button>
+            <button onClick={handleHome} style={{ fontSize: 16, background: "#999", color: "#fff", border: 0, borderRadius: 12, padding: "10px 24px", fontWeight: 700 }}>
+              Home
+            </button>
+          </>
+        )}
+      </div>
       <div style={{ marginTop: 16, color: "#e75480", fontWeight: 600, fontSize: 16 }}>🏹 Cupid Beaver</div>
     </div>
   );
