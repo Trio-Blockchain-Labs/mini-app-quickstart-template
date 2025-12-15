@@ -114,7 +114,13 @@ export default function LoginPage() {
                 key={em.key}
                 label={em.label}
                 imgSrc={em.img}
-                onClick={() => router.push(`/login/${em.key}`)}
+                onClick={() => {
+                  if (em.key === "scared") {
+                    router.push("/game");
+                  } else {
+                    router.push(`/login/${em.key}`);
+                  }
+                }}
               />
             ))}
           </div>
