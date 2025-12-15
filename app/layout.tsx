@@ -39,7 +39,6 @@ const pacifico = Pacifico({
   variable: "--font-pacifico",
   weight: "400",
   subsets: ["latin"],
-  weight: "400",
 });
 
 export default function RootLayout({
