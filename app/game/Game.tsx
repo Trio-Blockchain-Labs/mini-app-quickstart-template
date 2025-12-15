@@ -61,6 +61,7 @@ export default function Game() {
   const anxietyRef = React.useRef(anxiety);
   const scoreRef = React.useRef(score);
   const keysPressed = React.useRef<{[key: string]: boolean}>({});
+  const keysRef = React.useRef<Record<string, boolean>>({});
   const touchStart = React.useRef<{x: number, y: number} | null>(null);
   React.useEffect(() => { anxietyRef.current = anxiety; }, [anxiety]);
   React.useEffect(() => { scoreRef.current = score; }, [score]);
@@ -88,23 +89,37 @@ export default function Game() {
     ghostImg.src = "/sprites/ghost.svg";
 
     // simple catch sound via Web Audio API
-    const audioCtx = typeof window !== 'undefined' && (new (window.AudioContext || (window as any).webkitAudioContext)());
+    let audioCtx: AudioContext | null = null;
     function playCatchSound() {
-      if (!audioCtx) return;
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = 'square';
-      o.frequency.value = 420; // start freq
-      g.gain.value = 0.08; // low volume
-      o.connect(g);
-      g.connect(audioCtx.destination);
-      o.start();
-      // quick down-chirp
-      const nowA = audioCtx.currentTime;
-      o.frequency.setValueAtTime(420, nowA);
-      o.frequency.exponentialRampToValueAtTime(180, nowA + 0.18);
-      g.gain.exponentialRampToValueAtTime(0.0001, nowA + 0.2);
-      o.stop(nowA + 0.22);
+      try {
+        if (!audioCtx && typeof window !== 'undefined') {
+          audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        }
+        if (!audioCtx) return;
+        
+        // Resume audio context if suspended (user interaction required)
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        
+        const o = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        o.type = 'square';
+        o.frequency.value = 420; // start freq
+        g.gain.value = 0.08; // low volume
+        o.connect(g);
+        g.connect(audioCtx.destination);
+        o.start();
+        // quick down-chirp
+        const nowA = audioCtx.currentTime;
+        o.frequency.setValueAtTime(420, nowA);
+        o.frequency.exponentialRampToValueAtTime(180, nowA + 0.18);
+        g.gain.exponentialRampToValueAtTime(0.0001, nowA + 0.2);
+        o.stop(nowA + 0.22);
+      } catch (e) {
+        // Silently fail if audio context not available
+        console.log('Audio playback failed:', e);
+      }
     }
 
     let req = 0;
@@ -118,7 +133,7 @@ export default function Game() {
     const ghosts: Array<Vec & { vx: number; vy: number; speed: number; disabledUntil?: number; target?: {x:number;y:number}; lastPick?: number }> = ghostSpawns.map((p, i) => ({ x: p.x, y: p.y, vx: 0, vy: 0, speed: 0.55 + i * 0.08, target: undefined, lastPick: performance.now() }));
 
     let last = performance.now();
-    let keys: Record<string, boolean> = {};
+    let keys: Record<string, boolean> = keysRef.current;
     let pausedUntil = 0; // breathe pause
     const particles: Array<{ x:number; y:number; vx:number; vy:number; life:number; color:string; size:number }> = [];
     let pelletsCollected = 0; // Track pellets collected for difficulty scaling
@@ -745,11 +760,13 @@ export default function Game() {
     // Touch continuous control handlers
     let touchMoveInterval: NodeJS.Timeout | null = null;
     const handleTouchStart = (e: TouchEvent) => {
+      e.preventDefault();
       if (e.touches.length > 0) {
         touchStart.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       }
     };
     const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault();
       if (!touchStart.current || e.touches.length === 0) return;
       const currentTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
       const dx = currentTouch.x - touchStart.current.x;
@@ -816,20 +833,13 @@ export default function Game() {
       }
     };
 
-    canvas.addEventListener('touchstart', handleTouchStart, false);
-    canvas.addEventListener('touchmove', handleTouchMove, false);
-    canvas.addEventListener('touchend', handleTouchEnd, false);
-    canvas.addEventListener('touchcancel', handleTouchCancel, false);
+    // Canvas touch events removed - using on-screen buttons instead
     canvas.addEventListener('click', handleCanvasClick, false);
 
     return () => {
       cancelAnimationFrame(req);
       window.removeEventListener("keydown", handleKey);
       window.removeEventListener("keyup", handleKey);
-      canvas.removeEventListener('touchstart', handleTouchStart, false);
-      canvas.removeEventListener('touchmove', handleTouchMove, false);
-      canvas.removeEventListener('touchend', handleTouchEnd, false);
-      canvas.removeEventListener('touchcancel', handleTouchCancel, false);
       canvas.removeEventListener('click', handleCanvasClick, false);
     };
   }, [runKey]);
@@ -869,13 +879,13 @@ export default function Game() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-slate-900 overflow-hidden" style={{ overscrollBehavior: 'none', touchAction: 'pan-x pan-y' }}>
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-slate-900 overflow-hidden" style={{ overscrollBehavior: 'none' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '360px', marginBottom: 8 }}>
         <h2 className="text-2xl font-bold text-white">Scared Beaver Game</h2>
         <button onClick={handleHome} style={{ padding: '8px 20px', background: '#64748b', color: '#fff', borderRadius: 8, fontWeight: 600, border: 'none', fontSize: 14, cursor: 'pointer' }}>Home</button>
       </div>
-      <div className="relative bg-slate-800 rounded-3xl shadow-2xl overflow-hidden" style={{ width: '360px', height: '640px', touchAction: 'manipulation' }}>
-        <canvas ref={canvasRef} className="block" style={{ touchAction: 'none' }} />
+      <div className="relative bg-slate-800 rounded-3xl shadow-2xl overflow-hidden" style={{ width: '360px', height: '640px' }}>
+        <canvas ref={canvasRef} className="block" />
         
         {/* Start Screen */}
         {!started && !gameOver && (
@@ -918,30 +928,38 @@ export default function Game() {
       
       {/* Mobile Controls - Arrow Buttons */}
       {started && !gameOver && (
-        <div style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, zIndex: 100 }}>
+        <div style={{ position: 'fixed', bottom: 20, left: '50%', transform: 'translateX(-50%)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, zIndex: 9999, pointerEvents: 'auto' }}>
           <button 
-            onTouchStart={() => { keys.ArrowUp = true; }}
-            onTouchEnd={() => { keys.ArrowUp = false; }}
-            style={{ width: 60, height: 60, background: 'rgba(6, 182, 212, 0.8)', border: '2px solid #06b6d4', borderRadius: 12, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none' }}>
+            onMouseDown={(e) => { e.preventDefault(); keysRef.current.ArrowUp = true; }}
+            onMouseUp={(e) => { e.preventDefault(); keysRef.current.ArrowUp = false; }}
+            onTouchStart={(e) => { e.preventDefault(); keysRef.current.ArrowUp = true; }}
+            onTouchEnd={(e) => { e.preventDefault(); keysRef.current.ArrowUp = false; }}
+            style={{ width: 70, height: 70, background: '#06b6d4', border: '3px solid #0891b2', borderRadius: 12, color: '#fff', fontSize: 28, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}>
             ▲
           </button>
           <div style={{ display: 'flex', gap: 8 }}>
             <button 
-              onTouchStart={() => { keys.ArrowLeft = true; }}
-              onTouchEnd={() => { keys.ArrowLeft = false; }}
-              style={{ width: 60, height: 60, background: 'rgba(6, 182, 212, 0.8)', border: '2px solid #06b6d4', borderRadius: 12, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none' }}>
+              onMouseDown={(e) => { e.preventDefault(); keysRef.current.ArrowLeft = true; }}
+              onMouseUp={(e) => { e.preventDefault(); keysRef.current.ArrowLeft = false; }}
+              onTouchStart={(e) => { e.preventDefault(); keysRef.current.ArrowLeft = true; }}
+              onTouchEnd={(e) => { e.preventDefault(); keysRef.current.ArrowLeft = false; }}
+              style={{ width: 70, height: 70, background: '#06b6d4', border: '3px solid #0891b2', borderRadius: 12, color: '#fff', fontSize: 28, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}>
               ◄
             </button>
             <button 
-              onTouchStart={() => { keys.ArrowDown = true; }}
-              onTouchEnd={() => { keys.ArrowDown = false; }}
-              style={{ width: 60, height: 60, background: 'rgba(6, 182, 212, 0.8)', border: '2px solid #06b6d4', borderRadius: 12, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none' }}>
+              onMouseDown={(e) => { e.preventDefault(); keysRef.current.ArrowDown = true; }}
+              onMouseUp={(e) => { e.preventDefault(); keysRef.current.ArrowDown = false; }}
+              onTouchStart={(e) => { e.preventDefault(); keysRef.current.ArrowDown = true; }}
+              onTouchEnd={(e) => { e.preventDefault(); keysRef.current.ArrowDown = false; }}
+              style={{ width: 70, height: 70, background: '#06b6d4', border: '3px solid #0891b2', borderRadius: 12, color: '#fff', fontSize: 28, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}>
               ▼
             </button>
             <button 
-              onTouchStart={() => { keys.ArrowRight = true; }}
-              onTouchEnd={() => { keys.ArrowRight = false; }}
-              style={{ width: 60, height: 60, background: 'rgba(6, 182, 212, 0.8)', border: '2px solid #06b6d4', borderRadius: 12, color: '#fff', fontSize: 24, fontWeight: 700, cursor: 'pointer', userSelect: 'none' }}>
+              onMouseDown={(e) => { e.preventDefault(); keysRef.current.ArrowRight = true; }}
+              onMouseUp={(e) => { e.preventDefault(); keysRef.current.ArrowRight = false; }}
+              onTouchStart={(e) => { e.preventDefault(); keysRef.current.ArrowRight = true; }}
+              onTouchEnd={(e) => { e.preventDefault(); keysRef.current.ArrowRight = false; }}
+              style={{ width: 70, height: 70, background: '#06b6d4', border: '3px solid #0891b2', borderRadius: 12, color: '#fff', fontSize: 28, fontWeight: 700, cursor: 'pointer', userSelect: 'none', WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation' }}>
               ►
             </button>
           </div>
