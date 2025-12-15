@@ -186,8 +186,35 @@ export default function GameFirePage() {
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2 style={{ marginTop: 0 }}>Küçük Kunduz — Ateş Söndürme</h2>
+    <div
+      ref={containerRef}
+      style={{
+        position: "relative",
+        width: "100vw",
+        maxWidth: 480,
+        height: "100vh",
+        maxHeight: 900,
+        margin: "0 auto",
+        background: flash ? "#ffeaea" : "#fff",
+        overflow: "hidden",
+        borderRadius: 18,
+        boxShadow: "0 2px 24px #b8000033",
+        touchAction: "manipulation",
+        padding: 0,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "flex-start"
+      }}
+    >
+      <h2 style={{
+        marginTop: 12,
+        fontSize: 22,
+        fontWeight: 900,
+        color: "#b80000",
+        letterSpacing: 1,
+        textAlign: "center"
+      }}>Küçük Kunduz — Ateş Söndürme</h2>
       {/* Skor tabelası sol üst köşede sabit */}
       <div style={{
         position: "absolute",
@@ -324,44 +351,20 @@ export default function GameFirePage() {
             Ekrana çıkan ateşleri hızlıca tıkla ve söndür! Ateşler patlarsa puan kaybedersin.<br /><br />
             <b>Kurallar:</b><br />
             Bir ateşi söndürmek için üstüne bir, iki veya üç kere tıkla.<br />
-            Söndürdüğün ateş <b>+10 puan</b>, süresi dolan ateş <b>-5 puan</b>.
+            Söndürdüğün ateş <b>+10 puan</b>, süresi dolan ateş <b>-5 puan</b>.<br />
+            1000 puana ulaşırsan kazanırsın.<br />
           </div>
           <button onClick={() => {
             setScore(0);
             setFires([]);
             setPlaying(true);
+            setGameOver(false);
+            setWin(false);
             setSpawnInterval(INITIAL_SPAWN);
             setFireLifespan(INITIAL_LIFESPAN);
           }} style={{ fontSize: 22, padding: "12px 38px", borderRadius: 12, background: "#b80000", color: "#fff", fontWeight: 700, border: "none", boxShadow: "0 2px 8px #b8000033", marginBottom: 10 }}>Başla</button>
         </div>
       )}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "rgba(255,255,255,0.97)",
-          zIndex: 20,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          borderRadius: 18,
-        }}>
-          <img src="/fireandbeaver/firebeaver.png" alt="Fire Beaver" style={{ width: 110, height: 110, marginBottom: 18, borderRadius: "50%", boxShadow: "0 4px 24px #b8000033" }} />
-          <h2 style={{ color: "#b80000", fontWeight: 900, fontSize: 32, margin: 0, marginBottom: 10, letterSpacing: 2 }}>Firefighter Beaver</h2>
-          <div style={{ color: "#b80000", fontSize: 20, marginBottom: 18, textAlign: "center", maxWidth: 260 }}>
-            Tap or click the screen to extinguish fires!<br />
-            If too many fires explode, the game is over.<br />
-            <b>Rules:</b> Click each fire to put it out. Some fires need more than one click.<br />
-            Reach a score of 1000 to win.<br />
-          </div>
-          <div style={{ display: "flex", gap: 16 }}>
-            <button onClick={() => setPlaying(true)} style={{ fontSize: 22, padding: "12px 38px", borderRadius: 12, background: "#b80000", color: "#fff", fontWeight: 700, border: "none", boxShadow: "0 2px 8px #b8000033", marginBottom: 10 }}>Start</button>
-            <button onClick={() => router.push("/")} style={{ fontSize: 22, padding: "12px 38px", borderRadius: 12, background: "#fff", color: "#1e90ff", fontWeight: 700, border: "none", boxShadow: "0 2px 8px #1e90ff33", marginBottom: 10 }}>Go Back</button>
-          </div>
-        </div>
 // ...existing code...
         {/* beaver top center */}
         <div
