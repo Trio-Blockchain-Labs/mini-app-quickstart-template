@@ -91,7 +91,13 @@ export default function Home() {
                 {MOODS.map((mood) => (
                   <button
                     key={mood.id}
-                    onClick={() => router.push(`/login/${mood.id}`)}
+                    onClick={() => {
+                      if (mood.id === "fire") {
+                        router.push("/game-fire");
+                      } else {
+                        router.push(`/login/${mood.id}`);
+                      }
+                    }}
                     className="relative w-28 h-28 rounded-full bg-white/6 border border-white/10 flex items-center justify-center shadow-lg overflow-hidden transform transition duration-200 hover:scale-105 hover:shadow-2xl active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-300"
                     aria-label={mood.label}
                   >
