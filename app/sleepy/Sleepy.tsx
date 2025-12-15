@@ -6,31 +6,16 @@ export default function Sleepy() {
   const scoreRef = React.useRef(0);
   const [displayScore, setDisplayScore] = React.useState(0);
   const [gameOver, setGameOver] = React.useState(false);
-  const [running, setRunning] = React.useState(true);
-  const [showMenu, setShowMenu] = React.useState(false);
+  const [running, setRunning] = React.useState(false);
+  const [showMenu, setShowMenu] = React.useState(true);
   const [showHomeModal, setShowHomeModal] = React.useState(false);
 
   React.useEffect(() => {
     const canvas = canvasRef.current!;
     const ctx = canvas.getContext("2d")!;
-    // Portrait mobile: fill viewport, keep 9:16 aspect
-    function resizeCanvas() {
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      // 9:16 aspect ratio
-      let width = vw;
-      let height = Math.round((vw / 9) * 16);
-      if (height > vh) {
-        height = vh;
-        width = Math.round((vh / 16) * 9);
-      }
-      canvas.width = width;
-      canvas.height = height;
-      canvas.style.width = width + 'px';
-      canvas.style.height = height + 'px';
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    // Sabit mobil boyut: 360x640 (9:16 aspect ratio)
+    canvas.width = 360;
+    canvas.height = 640;
 
     // Görseller
     const playerImg = new Image();
@@ -42,7 +27,7 @@ export default function Sleepy() {
     const bedImg = new Image();
     bedImg.src = "/bears/bed.svg"; // SVG kullan
 
-    let player = { x: canvas.width / 2, y: canvas.height - 100, width: 70, height: 70, speed: 7 };
+    let player = { x: canvas.width / 2, y: canvas.height - 100, width: 60, height: 60, speed: 6 };
     let keys: Record<string, boolean> = {};
     
     // Düşen objeler
@@ -88,8 +73,28 @@ export default function Sleepy() {
       else keys[e.key] = false;
     }
 
+    function handleTouchMove(e: TouchEvent) {
+      if (gameOver || !running) return;
+      if (e.touches.length === 0) return;
+      
+      const canvasRect = canvas.getBoundingClientRect();
+      const touchX = e.touches[0].clientX - canvasRect.left;
+      
+      // Sol taraf (< 1/3) - sola hareket
+      if (touchX < canvas.width / 3) {
+        player.x -= player.speed * 1.5;
+      }
+      // Sağ taraf (> 2/3) - sağa hareket
+      else if (touchX > (canvas.width * 2) / 3) {
+        player.x += player.speed * 1.5;
+      }
+      
+      player.x = Math.max(player.width / 2, Math.min(player.x, canvas.width - player.width / 2));
+    }
+
     window.addEventListener("keydown", handleKey);
     window.addEventListener("keyup", handleKey);
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: true });
 
     let req = 0;
     let last = performance.now();
@@ -116,8 +121,8 @@ export default function Sleepy() {
       if (now - lastSpawn > 800 / gameSpeed) {
         // Daha fazla yatak gelsin: kahve olma ihtimali %35'e düşürüldü
         const type = Math.random() > 0.65 ? "coffee" : "bed";
-        const x = Math.random() * (canvas.width - 80) + 40;
-        const size = type === "coffee" ? 50 : 60;
+        const x = Math.random() * (canvas.width - 60) + 30;
+        const size = type === "coffee" ? 40 : 50;
         items.push({ x, y: -30, type, speed: 2.5 + gameSpeed * 0.5, size });
         lastSpawn = now;
       }
@@ -180,22 +185,24 @@ export default function Sleepy() {
       if (playerImg.complete && playerImg.naturalWidth) {
         ctx.drawImage(playerImg, player.x - player.width / 2, player.y - player.height / 2, player.width, player.height);
       } else {
-        ctx.font = "60px Arial";
-        ctx.fillText(gameOver ? "😴" : "😵‍💫", player.x - 30, player.y + 15);
+        ctx.font = "50px Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(gameOver ? "😴" : "😵‍💫", player.x, player.y + 15);
+        ctx.textAlign = "left";
       }
 
       // Sağ üst köşede skor ve hız göstergesi
       ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-      ctx.fillRect(canvas.width - 150, 10, 140, 80);
+      ctx.fillRect(canvas.width - 120, 10, 110, 70);
       
       ctx.fillStyle = "#FFD700";
-      ctx.font = "bold 24px Arial";
+      ctx.font = "bold 20px Arial";
       ctx.textAlign = "left";
-      ctx.fillText(`☕ ${scoreRef.current}`, canvas.width - 140, 40);
+      ctx.fillText(`☕ ${scoreRef.current}`, canvas.width - 110, 35);
       
       ctx.fillStyle = "#fff";
-      ctx.font = "16px Arial";
-      ctx.fillText(`Hız: ${gameSpeed.toFixed(1)}x`, canvas.width - 140, 70);
+      ctx.font = "14px Arial";
+      ctx.fillText(`Hız: ${gameSpeed.toFixed(1)}x`, canvas.width - 110, 60);
       
       ctx.textAlign = "left"; // Reset
 
@@ -208,12 +215,45 @@ export default function Sleepy() {
       cancelAnimationFrame(req);
       window.removeEventListener("keydown", handleKey);
       window.removeEventListener("keyup", handleKey);
-      window.removeEventListener('resize', resizeCanvas);
+      canvas.removeEventListener("touchmove", handleTouchMove);
     };
   }, [running, gameOver]);
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center bg-slate-900 min-h-screen min-w-full max-w-full max-h-screen overflow-hidden" style={{ aspectRatio: '9/16' }}>
+    <div className="fixed inset-0 flex flex-col items-center justify-center bg-slate-900 min-h-screen overflow-hidden">
+      {/* Başlangıç menüsü */}
+      {showMenu && !gameOver && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+          <div className="bg-gradient-to-b from-amber-600 to-amber-700 rounded-3xl shadow-2xl p-8 flex flex-col items-center gap-6 max-w-[320px]">
+            <div className="text-6xl mb-4">☕</div>
+            <h2 className="text-3xl text-white font-bold text-center">Coffee Run</h2>
+            <p className="text-white text-center text-lg leading-relaxed">
+              Finals week! Collect coffee and don't fall asleep! Avoid the beds or you'll doze off!
+            </p>
+            <div className="w-full flex flex-col gap-3">
+              <button
+                className="w-full px-6 py-3 bg-yellow-400 hover:bg-yellow-500 text-amber-900 rounded-lg font-bold text-lg transition transform hover:scale-105"
+                onClick={() => { 
+                  scoreRef.current = 0;
+                  setDisplayScore(0);
+                  setGameOver(false);
+                  setRunning(true);
+                  setShowMenu(false);
+                }}
+              >Start Game</button>
+              <button
+                className="w-full px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-semibold text-lg transition"
+                onClick={() => { window.location.href = "/"; }}
+              >Back to Home</button>
+            </div>
+            <div className="text-white text-sm text-center pt-4 border-t border-amber-500">
+              <p>Touch left to move left</p>
+              <p>Touch right to move right</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Home icon top-right */}
       <div className="absolute top-4 right-4 z-30">
         <button
@@ -255,17 +295,17 @@ export default function Sleepy() {
         </div>
       )}
       <h1 className="text-3xl font-bold text-white mt-4">☕ Coffee Run ☕</h1>
-      <p className="text-slate-300 text-center max-w-md">
+      <p className="text-slate-300 text-center max-w-md px-4">
         Finals week! Collect coffee and don't fall asleep! Avoid the beds or you'll doze off!
       </p>
-      <div className="relative bg-slate-800 p-2 rounded-lg shadow-2xl w-full flex justify-center items-center" style={{ aspectRatio: '9/16', maxWidth: '420px' }}>
-        <canvas ref={canvasRef} className="rounded" style={{ imageRendering: 'auto', width: '100%', height: '100%' }} />
+      <div className="relative bg-slate-800 rounded-3xl shadow-2xl overflow-hidden" style={{ width: '360px', height: '640px' }}>
+        <canvas ref={canvasRef} className="block" />
         {gameOver && (
           <div className="absolute inset-0 flex items-center justify-center flex-col bg-black/80 rounded">
             <div className="text-6xl mb-4">😴</div>
             <div className="text-white text-3xl font-bold mb-2">GAME OVER</div>
-            <div className="text-yellow-300 text-xl mb-4">You fell asleep! 💤</div>
-            <div className="text-white text-2xl mb-6">Total Coffee: ☕ {displayScore}</div>
+            <div className="text-yellow-300 text-xl mb-4">You fell asleep!</div>
+            <div className="text-white text-2xl mb-6">Total Coffee: {displayScore}</div>
             <button 
               onClick={() => { 
                 scoreRef.current = 0;
@@ -275,15 +315,13 @@ export default function Sleepy() {
               }} 
               className="px-6 py-3 bg-amber-500 hover:bg-amber-600 rounded-lg text-white font-bold text-lg transition"
             >
-              ☕ Play Again
+              Play Again
             </button>
           </div>
         )}
       </div>
       <div className="text-slate-300 text-sm text-center mt-2">
-        <div>⬅️ A / Left Arrow - Move Left</div>
-        <div>➡️ D / Right Arrow - Move Right</div>
-        <div className="mt-2 text-amber-400">✨ The game speeds up over time!</div>
+        <div className="text-amber-400">The game speeds up over time!</div>
       </div>
     </div>
   );

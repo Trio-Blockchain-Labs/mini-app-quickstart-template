@@ -4,12 +4,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 const MOODS = [
-	{ id: "sad", label: "Üzgün", img: "/bears/sad.png", route: "/game-tears" },
-	{ id: "happy", label: "Mutlu", img: "/bears/happy.png", route: "/game-jump" },
-	{ id: "scared", label: "Korkmuş", img: "/bears/scared.png", route: "/game" },
-	{ id: "sleepy", label: "Uykulu", img: "/bears/sleepy.png", route: "/game-sleepy" },
-	{ id: "love", label: "Aşık", img: "/bears/love.png", route: "/" },
-	{ id: "fire", label: "Ateşli", img: "/bears/fire.png", route: "/game-fire" },
+	{ id: "sad", label: "Sad", img: "/bears/sad.png", route: "/game-tears" },
+	{ id: "happy", label: "Happy", img: "/bears/happy.png", route: "/game-jump" },
+	{ id: "scared", label: "Scared", img: "/bears/scared.png", route: "/game" },
+	{ id: "sleepy", label: "Sleepy", img: "/bears/sleepy.png", route: "/game-sleepy" },
+	{ id: "love", label: "Love", img: "/bears/love.png", route: "/" },
+	{ id: "fire", label: "Fire", img: "/bears/fire.png", route: "/game-fire" },
 ];
 
 export default function Home() {
