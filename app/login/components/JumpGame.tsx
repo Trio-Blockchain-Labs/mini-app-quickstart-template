@@ -9,6 +9,7 @@ type JumpGameProps = {
   beaverSrc?: string;
   onGameOver?: () => void;
   onScoreChange?: (score: number) => void;
+  scoreInit?: number;
 };
 
 function JumpGame({
@@ -16,6 +17,7 @@ function JumpGame({
   beaverSrc = "/games/beaver.png",
   onGameOver,
   onScoreChange,
+  scoreInit = 0,
 }: JumpGameProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -41,10 +43,10 @@ function JumpGame({
         vx: 0,
       };
       let lastSafePosition = { x: player.x, y: player.y };
-  let gravity = 0.4;
-  let jumpImpulse = -10;
-  let platformGap = 80;
-  let difficultyIncreased = false;
+      let gravity = 0.4;
+      let jumpImpulse = -10;
+      let platformGap = 80;
+      let difficultyIncreased = false;
 
       // Canlar
       let lives = 3;
@@ -66,6 +68,9 @@ function JumpGame({
           h: 16,
         }))
       ];
+
+      // Score başlat
+      let jumpedPlatformCount = scoreInit || 0;
 
     // Görseller
     const grassImg = new window.Image();
@@ -112,7 +117,7 @@ function JumpGame({
 
     // Oyun döngüsü
   let lastPlatformY = player.y;
-  let jumpedPlatformCount = 0; // Atlanan platform sayısı (Score olarak kullanılacak)
+  // let jumpedPlatformCount = 0; // Atlanan platform sayısı (Score olarak kullanılacak)
     let gameOver = false;
 
     function step() {
