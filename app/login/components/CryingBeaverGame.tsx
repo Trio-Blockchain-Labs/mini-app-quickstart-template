@@ -17,6 +17,10 @@ export default function CryingBeaverGame() {
     let width = (canvas.width = Math.min(360, window.innerWidth - 20));
     let height = (canvas.height = Math.min(640, window.innerHeight - 40));
 
+    // Sad arka plan görseli
+    const sadBg = new window.Image();
+    sadBg.src = "/bears/sadbackground.avif";
+
     // Proportional beaver and bucket (adjusted)
     const BEAVER_WIDTH = width * 0.36; // larger beaver
     const BEAVER_ASPECT = 1.1;
@@ -247,17 +251,36 @@ export default function CryingBeaverGame() {
       // Draw
       if (!ctx) return;
       ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = "#b3e5c7"; // new background color
-      ctx.fillRect(0, 0, width, height);
-      // Draw ground block at the bottom
-      if (blockImg.complete && blockImg.naturalWidth > 0) {
-        const blockH = 48;
-        for (let bx = 0; bx < width; bx += blockImg.naturalWidth) {
-          ctx.drawImage(blockImg, bx, height - blockH, blockImg.naturalWidth, blockH);
+      // Arka plan görseli (sadbackground.avif) orijinal oranında, ortalanmış şekilde
+      if (sadBg.complete && sadBg.naturalWidth > 0 && sadBg.naturalHeight > 0) {
+        const imgRatio = sadBg.naturalWidth / sadBg.naturalHeight;
+        const canvasRatio = width / height;
+        let drawW = width, drawH = height, dx = 0, dy = 0;
+        if (imgRatio > canvasRatio) {
+          // Görsel daha geniş: yükseklik tam, genişlik taşarsa ortala
+          drawH = height;
+          drawW = height * imgRatio;
+          dx = (width - drawW) / 2;
+        } else {
+          // Görsel daha dar: genişlik tam, yükseklik taşarsa ortala
+          drawW = width;
+          drawH = width / imgRatio;
+          dy = (height - drawH) / 2;
         }
+        ctx.drawImage(sadBg, dx, dy, drawW, drawH);
       } else {
-        ctx.fillStyle = "#8d6e63";
-        ctx.fillRect(0, height - 48, width, 48);
+        ctx.fillStyle = "#b3e5c7"; // fallback background color
+        ctx.fillRect(0, 0, width, height);
+      }
+      // Draw ground block at the bottom
+      // Sadece kunduzun ayağının altına, orijinal boyutunda ve ortalanmış olarak çim bloğu koy
+      if (blockImg.complete && blockImg.naturalWidth > 0 && blockImg.naturalHeight > 0) {
+        const blockW = blockImg.naturalWidth;
+        const blockH = blockImg.naturalHeight;
+        const thinH = blockH * 0.35;
+        const grassY = beaver.y + beaver.h - thinH / 2;
+        const grassX = beaver.x + beaver.w / 2 - blockW / 2;
+        ctx.drawImage(blockImg, grassX, grassY, blockW, thinH);
       }
       drawBeaver(beaver.x, beaver.y, beaver.w, beaver.h);
       for (const tear of tears) drawTear(tear.x, tear.y, tear.width, tear.height, tear.phase, tear.isLeft);
