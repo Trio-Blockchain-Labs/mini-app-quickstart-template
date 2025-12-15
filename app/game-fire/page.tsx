@@ -1,5 +1,6 @@
-const MAX_UNEXTINGUISHED = 10; // Oyun bitirme eşiği (ateş sayısı)
+
 "use client"
+const MAX_UNEXTINGUISHED = 10; // Oyun bitirme eşiği (ateş sayısı)
 
 import React, { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
