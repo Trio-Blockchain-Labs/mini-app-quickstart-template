@@ -19,33 +19,7 @@ export default function Page() {
 
   return (
     <div style={{ minHeight: 700, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", position: "relative" }}>
-      {/* Skor üstte sol köşe */}
-      {started && !gameOver && (
-        <div style={{ position: "absolute", top: 18, left: 18, zIndex: 20, background: "#fff", color: "#1e90ff", fontWeight: 700, fontSize: 22, borderRadius: 10, padding: "6px 18px", boxShadow: "0 2px 8px #1e90ff33" }}>
-          Score: {score}
-        </div>
-      )}
-      {/* Home tuşu */}
-      {started && !gameOver && (
-        <button
-          onClick={() => setShowMenu(true)}
-          style={{
-            position: "absolute",
-            top: 18,
-            right: 18,
-            zIndex: 10,
-            background: "#fff",
-            color: "#1e90ff",
-            fontWeight: 700,
-            fontSize: 20,
-            border: "2px solid #1e90ff",
-            borderRadius: 10,
-            padding: "8px 18px",
-            boxShadow: "0 2px 8px #1e90ff33",
-            cursor: "pointer"
-          }}
-        >Home</button>
-      )}
+      {/* Score and Home button removed as requested */}
       {/* Menü Modalı */}
       {showMenu && (
         <div style={{
