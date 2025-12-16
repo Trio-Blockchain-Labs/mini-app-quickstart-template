@@ -47,7 +47,7 @@ export default function Home() {
 							<source src="/background.mp4" type="video/mp4" />
 							<source src="/intro.mp4" type="video/mp4" />
 						</video>
-						<div className="absolute inset-x-0 top-8 z-10 flex flex-col items-center px-4">
+						<div className="absolute inset-x-0 top-16 z-10 flex flex-col items-center px-4">
 							<h1 className="text-4xl sm:text-5xl font-extrabold text-yellow-300 tracking-tight drop-shadow-[0_2px_0_rgba(0,0,0,0.6)]" style={{ WebkitTextStroke: '2px #111827', lineHeight: '0.9' }}>
 								BRAVER
 								<br />
@@ -55,7 +55,7 @@ export default function Home() {
 							</h1>
 						</div>
 						<div className="absolute left-0 right-0 bottom-20 z-10 px-6 flex flex-col items-center gap-4">
-							<div className="text-4xl sm:text-5xl text-cyan-200 font-bold italic" style={{ fontFamily: 'var(--font-pacifico)' }}>CHOOSE!</div>
+							  <div className="text-4xl sm:text-5xl text-cyan-200 font-bold" style={{ fontFamily: 'var(--font-pacifico)', fontStyle: 'oblique 10deg' }}>CHOOSE!</div>
 							<div className="grid grid-cols-3 grid-rows-2 gap-4 justify-center items-center">
 								{MOODS.map((mood) => (
 									<button
