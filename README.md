@@ -1,9 +1,9 @@
-# Base Mini App Quickstart
+# Braver Beaver - Emotion-Based Mini Games
 
-This is a **Mini App** template built using [OnchainKit](https://onchainkit.xyz) and the [Farcaster SDK](https://docs.farcaster.xyz/). It is designed to help you build and deploy a Mini App that can be published to the [Base App](https://www.base.dev) and Farcaster.
+**Braver Beaver** is a collection of six emotion-themed mini-games built as a Mini App using [OnchainKit](https://onchainkit.xyz) and the [Farcaster SDK](https://docs.farcaster.xyz/). Play as Kunduz the Beaver and explore games based on different emotions and moods!
 
 > [!IMPORTANT]
-> This is a workshop template. Please follow the instructions below to configure and deploy your app.
+> This is a Mini App that can be published to the [Base App](https://www.base.dev) and Farcaster.
 
 ## Prerequisites
 
@@ -147,12 +147,42 @@ For detailed docs, visit [docs.base.org](https://docs.base.org/docs/mini-apps/qu
 
 This project is a **demo application** for educational purposes only.
 
-## Anxiety Game Prototype
+## Braver Beaver Games
 
-Try the small anxiety-themed prototype by running the app locally and visiting `/game` or clicking **Play Demo** on the homepage. It's a minimal playable demo implementing the mechanics you described (anxiety meter, ghosts, power-ups and the "Stop & Breathe" mechanic).
+**Braver Beaver** is a collection of six emotion-themed mini-games featuring Kunduz the Beaver. Each game represents a different mood and offers unique gameplay mechanics.
 
-Update (Dec 2025): The prototype now uses a small Pac‑Man‑style maze, arrow-key controls, and three ghosts. You have 3 lives; ghosts now roam the maze passively (they don't aggressively chase you). The player can use Shift to dash away. Your anxiety meter rises as ghosts get closer — avoid them and collect pellets to calm down. Restart the demo to play again.
+### Game 1: Tears (Sad) - `/game-tears`
+Catch falling tears with your bucket! Every tear that hits the ground creates a water puddle. If the puddles reach Kunduz, the game is over. Move left and right to catch as many tears as possible.
 
-Visuals: The game now uses simple SVG sprites located in `public/sprites/` for the beaver (player) and ghosts, and the maze walls are drawn with blue outlines to resemble classic arcade styling. Power pellets appear in the four corners. If you'd like, I can replace the SVGs with your exact artwork files (PNG/SVG) — just upload them and I'll swap them in.
+**Controls:** Tap left or right side of the screen to move the bucket.
 
-Feedback welcome — tell me which mechanics you'd like me to tune next (difficulty, visuals, level progression, etc.).
+### Game 2: Jump (Happy) - `/game-jump`
+Jump on platforms and reach as high as you can! Kunduz has 3 lives. The game speeds up after reaching certain scores. If you fall and lose all lives, you burn and the game ends.
+
+**Controls:** Swipe left or right to move Kunduz in that direction.
+
+### Game 3: Scared - `/game`
+Pac-Man style maze game! Kunduz runs away from ghosts and has 3 lives. Collect all the dots on the screen to increase your score. When all dots are collected, new ones appear and the game speeds up. If you lose all 3 lives, you burn and the game is over.
+
+**Controls:** Use on-screen arrow buttons at the bottom to move up, down, left, or right.
+
+### Game 4: Sleepy - `/game-sleepy`
+Stay awake! Collect coffee cups to keep Kunduz energized while avoiding pillows that make him sleepy. Don't let the sleep meter fill up!
+
+**Controls:** Tap left or right side of the screen to move.
+
+### Game 5: Love - `/game-love`
+Cupid Kunduz! Shoot arrows to hit lover beavers and bonuses while avoiding broken hearts. This is a timed game - when time runs out, the game ends. Aim carefully!
+
+**Controls:** Drag and release to aim and shoot arrows in any direction.
+
+### Game 6: Fire - `/game-fire`
+Put out the fires! Each fire shows a number indicating how many times you need to tap it. If you don't extinguish a fire in time, it explodes. Your score starts at 0 - if it drops to -200, you lose. Reach 1000 points to win!
+
+**Controls:** Tap on fires to extinguish them.
+
+---
+
+**Repository:** [github.com/zeynepsena316/mini-app-quickstart-template](https://github.com/zeynepsena316/mini-app-quickstart-template)
+
+Play all six games and help Kunduz navigate through different emotions!

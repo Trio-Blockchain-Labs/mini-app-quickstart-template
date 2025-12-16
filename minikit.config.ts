@@ -24,23 +24,23 @@ export const minikitConfig = {
 
   miniapp: {
     version: "1",
-    name: "Mini App Quickstart Template",
-    subtitle: "Quickstart Template",
+    name: "Braver Beaver",
+    subtitle: "Emotion-Based Mini Games",
     description:
-      "A starter template for building Base Mini Apps using Next.js. By Trio Blockchain Labs.",
+      "Play as Kunduz the Beaver in six emotion-themed mini-games: Tears, Jump, Scared, Sleepy, Love, and Fire. Each game offers unique mechanics and challenges!",
     screenshotUrls: [],
     iconUrl: `${ROOT_URL}/icon.png`,
     splashImageUrl: `${ROOT_URL}/splash.png`,
     splashBackgroundColor: "#000000",
     homeUrl: ROOT_URL,
     webhookUrl: `${ROOT_URL}/api/webhook`,
-    primaryCategory: "developer-tools",
-    tags: ["developer-tools", "productivity"],
+    primaryCategory: "games",
+    tags: ["games", "arcade", "casual", "emotion"],
     heroImageUrl: `${ROOT_URL}/hero.png`,
-    tagline: "Ship mini apps faster. By TriO",
-    ogTitle: "Mini App Quickstart Template",
+    tagline: "Navigate emotions through playful mini-games",
+    ogTitle: "Braver Beaver - Emotion Games",
     ogDescription:
-      "A template for building Base Mini Apps using Next.js and TypeScript. By Trio Blockchain Labs",
+      "Six emotion-themed arcade games featuring Kunduz the Beaver. Catch tears, jump platforms, escape ghosts, and more!",
     ogImageUrl: `${ROOT_URL}/hero.png`,
   },
 } as const;
