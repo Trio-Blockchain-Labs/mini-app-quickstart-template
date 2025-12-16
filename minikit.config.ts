@@ -1,22 +1,25 @@
 const ROOT_URL =
   process.env.NEXT_PUBLIC_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'http://localhost:3000');
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
 
 /**
  * MiniApp configuration object. Must follow the Farcaster MiniApp specification.
  *
  * @see {@link https://miniapps.farcaster.xyz/docs/guides/publishing}
+ * @see {@link https://docs.base.org/mini-apps/core-concepts/manifest}
  */
 export const minikitConfig = {
-
-
-
+  
+  // Paste accountAssociation object here
 
   miniapp: {
     version: "1",
-    name: "Isik University Campus",
-    subtitle: "Campus Access & Payments",
-    description: "Isik University öğrencileri için kampüs geçiş ve ödeme mini uygulaması.",
+    name: "Mini App Quickstart Template",
+    subtitle: "Quickstart Template",
+    description:
+      "A starter template for building Base Mini Apps using Next.js. By Trio Blockchain Labs.",
     screenshotUrls: [],
     iconUrl: `${ROOT_URL}/icon.png`,
     splashImageUrl: `${ROOT_URL}/splash.png`,
@@ -26,9 +29,10 @@ export const minikitConfig = {
     primaryCategory: "education",
     tags: ["education", "campus", "payments"],
     heroImageUrl: `${ROOT_URL}/hero.png`,
-    tagline: "Işık Üniversitesi için onchain giriş ve ödemeler.",
-    ogTitle: "Isik University Campus",
-    ogDescription: "Işık Üniversitesi kampüs giriş ve ödeme mini uygulaması.",
+    tagline: "Ship mini apps faster. By TriO",
+    ogTitle: "Mini App Quickstart Template",
+    ogDescription:
+      "A template for building Base Mini Apps using Next.js and TypeScript. By Trio Blockchain Labs",
     ogImageUrl: `${ROOT_URL}/hero.png`,
   },
 } as const;
