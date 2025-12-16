@@ -2,8 +2,8 @@
 import React, { useRef, useEffect, useState } from "react";
 
 // --- Oyun Sabitleri ---
-const CANVAS_W = 400;
-const CANVAS_H = 700;
+const CANVAS_W = 360;
+const CANVAS_H = 640;
 const BEAVER_Y = CANVAS_H - 100;
 const ARROW_SPEED = 12;
 const TARGET_RADIUS = 32;
@@ -453,7 +453,7 @@ export default function LoveGame() {
     ctx.fillStyle = "#e75480";
     ctx.fillText(`Skor: ${score}`, 20, 36);
     ctx.fillText(`⏰ ${timer}s`, CANVAS_W-80, 36);
-    if(combo>1) ctx.fillText(`🔥 Combo x${combo}`, CANVAS_W/2, 36);
+    if(combo>1) ctx.fillText(`🔥 Combo x${combo}`, CANVAS_W/2 - 50, 36);
     ctx.restore();
     // Efektler
     if(effect){
@@ -699,7 +699,7 @@ export default function LoveGame() {
   return (
     <div style={{ width: '360px', height: '640px', background: '#f7eaff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', position: 'relative', margin: '0 auto', borderRadius: 18, boxShadow: '0 2px 24px #e7548033', overflow: 'hidden' }}>
       {/* Home icon top-right */}
-      <div style={{ position: "absolute", top: 16, right: 16, zIndex: 30 }}>
+      <div style={{ position: "absolute", top: 50, right: 16, zIndex: 30 }}>
         <button
           onClick={handleHome}
           style={{ background: "#fff", color: "#1e293b", borderRadius: 9999, width: 48, height: 48, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px #0002", border: "none", cursor: "pointer" }}
