@@ -43,23 +43,18 @@ export default function Home() {
           />
         </div>
       </div>
+      <h1 className="text-4xl font-bold text-center">Base Mini App Template</h1>
+      <p className="text-center text-gray-600">
+        Welcome to your new Base MiniApp!
+      </p>
 
-      <div className="text-center space-y-3">
-        <h1 className="text-4xl font-bold">Işık Üniversitesi Kampüs Girişi</h1>
-        <p className="text-gray-700 text-lg">
-          Base cüzdanınla giriş yap, kampüs erişimini ve ödemeleri yönet.
-        </p>
-      </div>
-
-      <div className="w-full max-w-md">
-        <Wallet>
-          <ConnectWallet className="w-full bg-[#0000ff] text-button-text font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-colors">
-            Base Wallet ile Giriş Yap
-          </ConnectWallet>
-        </Wallet>
-        <p className="text-center text-sm text-gray-600 mt-3">
-          Bağlandıktan sonra otomatik olarak kampüs ekranına yönlendirileceksiniz.
-        </p>
+      <div className="fixed bottom-8 w-full px-4">
+        <button
+          onClick={() => router.push('/attendance')}
+          className="w-full bg-[#0000ff] text-button-text font-bold py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-colors"
+        >
+          Başla
+        </button>
       </div>
     </div>
   );
