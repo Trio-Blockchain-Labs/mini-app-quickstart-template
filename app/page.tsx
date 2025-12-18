@@ -1,4 +1,6 @@
 
+"use client";
+
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -7,7 +9,6 @@ export const metadata: Metadata = {
 	},
 };
 
-"use client";
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
