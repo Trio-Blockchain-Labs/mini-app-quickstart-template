@@ -1,13 +1,7 @@
 
 "use client";
 
-import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-	other: {
-		'base:app_id': '693e9771d19763ca26ddc2c1',
-	},
-};
 
 import React, { useEffect, useRef } from "react";
 import Image from "next/image";
